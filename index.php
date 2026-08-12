@@ -19,6 +19,20 @@ $required_files = [
     'data/storenumber.json', 'data/id/admin.json', 'data/txt/random.json', 
     'assignment/addem.json', 'assignment/addid.json', 'data/api/apps.json'
 ];
+// مصفوفة بالملفات الجديدة المفقودة لتجهيزها تلقائياً
+$extra_files = [
+    'data/txt/rubleall.txt', 'data/txt/pointall.txt',
+    'EMILS/number.json', 'EMILS/send.json', 'EMILS/card.json', 'EMILS/price.json',
+    'data/id/restriction.txt', 'data/id/step.txt', 'data/id/twas.txt', 'data/id/number.txt'
+];
+
+foreach ($extra_files as $file) {
+    if (!file_exists($file)) {
+        // إذا كان ملف json نضع مصفوفة فارغة، وإذا كان txt نتركه فارغاً
+        $content = (pathinfo($file, PATHINFO_EXTENSION) === 'json') ? json_encode([]) : '';
+        file_put_contents($file, $content);
+    }
+}
 
 foreach ($required_files as $file) {
     if (!file_exists($file)) {
