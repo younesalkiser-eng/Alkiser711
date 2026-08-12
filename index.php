@@ -52,7 +52,7 @@ if (isset($update)) {
 $update = json_decode(file_get_contents('php://input'));
 
 // شرط الأمان: لا تشغل بقية الكود إلا إذا جاء طلب حقيقي من تليجرام
-if (isset($update) && (!empty($update->message) || !empty(`$update->callback_query))) 
+if (isset($update) && (!empty($update->message) || !empty($update->callback_query))) 
                                                      
 $message = $update->message;
 $chat_id = $message->chat->id;
