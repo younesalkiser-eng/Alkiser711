@@ -1,5 +1,5 @@
 <?php
-include("name.php");
+// name.php يتم تحميله مسبقًا من index.php قبل استدعاء admin.php
 #=========={النفايات}==========#
 if($data == 'delPHP'){
 bot('answercallbackquery',[
