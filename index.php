@@ -49,7 +49,7 @@ if (isset($update)) {
     $chat_id = $message->chat->id;
     // ... باقي كود البوت بالكامل ينتهي هنا ...
 }
-$`update = json_decode(file_get_contents('php://input'));
+$update = json_decode(file_get_contents('php://input'));
 
 // شرط الأمان: لا تشغل بقية الكود إلا إذا جاء طلب حقيقي من تليجرام
 if (isset($update) && (!empty($update->message) || !empty(`$update->callback_query))) 
