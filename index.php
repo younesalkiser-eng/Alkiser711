@@ -3,14 +3,14 @@
 // By @v_9_k_e
 
 ob_start();
-mkdir('data');
-mkdir('EMIL');
-mkdir('EMILS');
-mkdir('BUY');
-mkdir('assignment');
-mkdir('data/id');
-mkdir('data/txt');
-mkdir('data/api');
+if (!file_exists('data')) { mkdir('data', 0777, true); }
+if (!file_exists('EMIL')) { mkdir('EMIL', 0777, true); }
+if (!file_exists('EMILS')) { mkdir('EMILS', 0777, true); }
+if (!file_exists('BUY')) { mkdir('BUY', 0777, true); }
+if (!file_exists('assignment')) { mkdir('assignment', 0777, true); }
+if (!file_exists('data/id')) { mkdir('data/id', 0777, true); }
+if (!file_exists('data/txt')) { mkdir('data/txt', 0777, true); }
+if (!file_exists('data/api')) { mkdir('data/api', 0777, true); }
 $API_KEY= '8585855339:AAFwTP2TrkhcowYndpfBJwtg6RXnWjunxeE';
 define('API_KEY',$API_KEY);
 echo file_get_contents("https://api.telegram.org/bot" . API_KEY . "/setwebhook?url=" . $_SERVER['SERVER_NAME'] . "" . $_SERVER['SCRIPT_NAME']);
@@ -21,7 +21,15 @@ $amrakl = file_get_contents($url);
 return json_decode($amrakl);
 }
 $update = json_decode(file_get_contents('php://input'));
+$update = json_decode(file_get_contents('php://input'));
 
+// هذا الشرط يحمي الكود من المتصفح الخارجي
+if (isset($update)) {
+    // ضع هنا كل الكود الخاص بقراءة الرسائل (من سطر 25 فما فوق)
+    $message = $update->message;
+    $chat_id = $message->chat->id;
+    // ... باقي كود البوت بالكامل ينتهي هنا ...
+}
 $message = $update->message;
 $chat_id = $message->chat->id;
 $text = $message->text;
