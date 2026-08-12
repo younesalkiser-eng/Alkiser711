@@ -166,6 +166,30 @@ $random = json_decode(file_get_contents('data/txt/random.json'),true);
 $assignment = json_decode(file_get_contents('assignment/addem.json'),true);
 $assignment2 = json_decode(file_get_contents('assignment/addid.json'),true);
 $APPS = json_decode(file_get_contents('data/api/apps.json'),true);
+
+// تسجيل تلقائي للمستخدم عبر Telegram ID بدلاً من طلب البريد وكلمة المرور
+if (empty($EMIL[$chat_id]['emil']) || empty($EMILS['emils'][$EMIL[$chat_id]['emil']]['emil'])) {
+    do {
+        $auto_emil = 'user_' . $chat_id . '_' . substr(md5(uniqid('', true)), 0, 6);
+    } while (isset($EMILS['emils'][$auto_emil]));
+    $auto_pass = bin2hex(random_bytes(8));
+    $now_date = date('d/m/Y H:i:s');
+    $EMIL[$chat_id] = ['emil' => $auto_emil, 'pass' => $auto_pass, 'Date_created' => $now_date];
+    $EMILS['emils'][$auto_emil] = ['emil' => $auto_emil, 'pass' => $auto_pass, 'Date_created' => $now_date, 'id' => $chat_id];
+    Aemil($EMIL);
+    Bemil($EMILS);
+    $auto_dir = "EMILS/$auto_emil";
+    if (!is_dir($auto_dir)) mkdir($auto_dir, 0777, true);
+    foreach (['number.json' => [], 'send.json' => [], 'card.json' => [], 'price.json' => []] as $auto_file => $auto_default) {
+        if (!file_exists("$auto_dir/$auto_file")) file_put_contents("$auto_dir/$auto_file", json_encode($auto_default));
+    }
+    foreach (['rubles.txt', 'points.txt'] as $auto_file) {
+        if (!file_exists("$auto_dir/$auto_file")) file_put_contents("$auto_dir/$auto_file", '0');
+    }
+    $EMILNow['emil'][$chat_id] = $auto_emil;
+    $EMILNow['password'][$chat_id] = $auto_pass;
+    Now($EMILNow);
+}
 #============={أوامر إضافية}===========#
 $me = bot('getme',['bot'])->result->username;
 $bot="botbot";
@@ -387,7 +411,7 @@ bot('sendMessage',[
 
 - يجب الإشتراك بقناة البوت الرسمية لإستخدام البوت 📢
 
-*- رابط القناة: @pilotoooo @$chall*
+*- رابط القناة: @you_k711 @$chall*
 
 🙋‍♂️ *⁞ إضغط على الزر بالأسفل للتحقق.*
 ",
@@ -477,17 +501,17 @@ bot('sendMessage',[
 'text'=>"
 ♐️ - مرحبا بك [$first](tg://user?id=$id) ؛ 🤍
 
-*- في بوت @pilotoooo* ؛ البوت الأفضل على التليجرام والذي يقوم بتوفير *خدمات الأرقام الوهمية* ل مواقع السوشيال ميديا مثل *التيليجرام والواتساب والتويتر وغيره* 👾
+*- في بوت @you_k711* ؛ البوت الأفضل على التليجرام والذي يقوم بتوفير *خدمات الأرقام الوهمية* ل مواقع السوشيال ميديا مثل *التيليجرام والواتساب والتويتر وغيره* 👾
 
-*- قم بإنشاء حساب جديد* ؛ واذا كان لديك حساب من قبل: قم بالضغط على زر *تسجيل الدخول* ☑️
+*- تم تسجيل دخولك تلقائيًا، ويمكنك استخدام البوت مباشرةً. ☑️*
 ",
 'parse_mode'=>"MarkDown",
 'disable_web_page_preview'=>true,
 'reply_to_message_id'=>$message_id,
 'reply_markup'=>json_encode([
 'inline_keyboard'=>[
-[['text'=>'لديكَ حساب؟ تسجيل دخول 📲','callback_data'=>"login"]],
-[['text'=>'إنشاء حساب جديد ☑️','callback_data'=>"sign_in"]],
+
+
 [['text'=>'شروط الإستخدام وإخلاء للمسؤلية 🚨','callback_data'=>"to_explain"]],
 [["text"=>'إدارة البوت 👨🏻‍💻',"url"=>"tg://user?id=$sudo"]],
 [['text'=>'هام للأعضاء الجُدد ⚠️','callback_data'=>"Important"]],
@@ -532,17 +556,17 @@ bot('sendMessage',[
 'text'=>"
 ♐️ - مرحبا بك [$first](tg://user?id=$id) ؛ 🤍
 
-*- في بوت @pilotoooo* ؛ البوت الأفضل على التليجرام والذي يقوم بتوفير *خدمات الأرقام الوهمية* ل مواقع السوشيال ميديا مثل *التيليجرام والواتساب والتويتر وغيره* 👾
+*- في بوت @you_k711* ؛ البوت الأفضل على التليجرام والذي يقوم بتوفير *خدمات الأرقام الوهمية* ل مواقع السوشيال ميديا مثل *التيليجرام والواتساب والتويتر وغيره* 👾
 
-*- قم بإنشاء حساب جديد* ؛ واذا كان لديك حساب من قبل: قم بالضغط على زر *تسجيل الدخول* ☑️
+*- تم تسجيل دخولك تلقائيًا، ويمكنك استخدام البوت مباشرةً. ☑️*
 ",
 'parse_mode'=>"MarkDown",
 'disable_web_page_preview'=>true,
 'reply_to_message_id'=>$message_id,
 'reply_markup'=>json_encode([
 'inline_keyboard'=>[
-[['text'=>'لديكَ حساب؟ تسجيل دخول 📲','callback_data'=>"login"]],
-[['text'=>'إنشاء حساب جديد ☑️','callback_data'=>"sign_in"]],
+
+
 [['text'=>'شروط الإستخدام وإخلاء للمسؤلية 🚨','callback_data'=>"to_explain"]],
 [["text"=>'إدارة البوت 👨🏻‍💻',"url"=>"tg://user?id=$sudo"]],
 [['text'=>'هام للأعضاء الجُدد ⚠️','callback_data'=>"Important"]],
@@ -561,16 +585,16 @@ bot('EditMessageText',[
 'text'=>"
 ♐️ - مرحبا بك [$first](tg://user?id=$id) ؛ 🤍
 
-*- في بوت @pilotoooo* ؛ البوت الأفضل على التليجرام والذي يقوم بتوفير *خدمات الأرقام الوهمية* ل مواقع السوشيال ميديا مثل *التيليجرام والواتساب والتويتر وغيره* 👾
+*- في بوت @you_k711* ؛ البوت الأفضل على التليجرام والذي يقوم بتوفير *خدمات الأرقام الوهمية* ل مواقع السوشيال ميديا مثل *التيليجرام والواتساب والتويتر وغيره* 👾
 
-*- قم بإنشاء حساب جديد* ؛ واذا كان لديك حساب من قبل: قم بالضغط على زر *تسجيل الدخول* ☑️
+*- تم تسجيل دخولك تلقائيًا، ويمكنك استخدام البوت مباشرةً. ☑️*
 ",
 'parse_mode'=>"MarkDown",
 'disable_web_page_preview'=>true,
 'reply_markup'=>json_encode([
 'inline_keyboard'=>[
-[['text'=>'لديكَ حساب؟ تسجيل دخول 📲','callback_data'=>"login"]],
-[['text'=>'إنشاء حساب جديد ☑️','callback_data'=>"sign_in"]],
+
+
 [['text'=>'شروط الإستخدام وإخلاء للمسؤلية 🚨','callback_data'=>"to_explain"]],
 [["text"=>'إدارة البوت 👨🏻‍💻',"url"=>"tg://user?id=$sudo"]],
 [['text'=>'هام للأعضاء الجُدد ⚠️','callback_data'=>"Important"]],
@@ -630,7 +654,7 @@ unlink("data/id/$id/restriction.txt");
 }
 }
 #=========={تسجيل الدخول}==========#
-if($data == "login"){
+if(false && $data == "login"){
 $emile = $EMIL[$chat_id]['emil'];
 $password = $EMILS['emils'][$emile]['pass'];
 bot('EditMessageText',[
@@ -749,7 +773,7 @@ unlink("data/id/$id/step.txt");
 exit;
 }
 #=========={إنشاء حساب}=========#
-if($data == "sign_in"){
+if(false && $data == "sign_in"){
 $margin=rand(100000,999999);
 if($EMIL[$chat_id]['emil'] != null){
 bot('answercallbackquery',[
@@ -784,7 +808,7 @@ exit;
 }
 if($text != '/start' && $text != null && $exstep[0] == 'sign_in'){
 $margin = $exstep[1];
-$xzz = "@pilotoooo.COM";
+$xzz = "@you_k711.COM";
 $code = substr(str_shuffle("abcdefghijklmnopqrstuvwxyz"),0-7);
 $emile = "$code$xzz";
 $password = substr(str_shuffle("12345"),0-5);
@@ -933,7 +957,7 @@ bot('EditMessageText',[
 • *تعليمات عن كيفية إستعمال البوت :* ↘️
 
 - عندما تقوم بشراء رقم يجب أن تقوم بفحصها في حالة كانت الأرقام مستخدمة قم ب إلغاء الرقم وفي حالة كانت الأرقام جديده قم بشرائها.
-- لفحص الرقم, أضغط على زر *رؤية الرقم في واتسأب* بعد شراء الرقم, سيقوم بتوجيهك إلى الواتساب, في حالة قال لك *إن رقم الهاتف هذا +967••• @pilotoooo ليس في واتسأب* هذا يعني أن الرقم جديد ولم يستخدم في واتسأب من قبل, *أما في الحالات الأخرى فهذا يعني أن الرقم مستخدم في واتسأب ولا نتحمل مسؤولية تفعيلة في أي حال من الأحوال.*
+- لفحص الرقم, أضغط على زر *رؤية الرقم في واتسأب* بعد شراء الرقم, سيقوم بتوجيهك إلى الواتساب, في حالة قال لك *إن رقم الهاتف هذا +967••• @you_k711 ليس في واتسأب* هذا يعني أن الرقم جديد ولم يستخدم في واتسأب من قبل, *أما في الحالات الأخرى فهذا يعني أن الرقم مستخدم في واتسأب ولا نتحمل مسؤولية تفعيلة في أي حال من الأحوال.*
 - قد لا تصل الأكواد إلى بعض الأرقام لتطبيق *واتسأب* , لذلك ياعزيزي يمكنك  إستخدام واتسأب أعمال قد تم نشرة في قناتنا على التيليجرام [إضغط هنا لتحميلها](t.me/$chall/2186).
 - في حالة لم يصل الكود في هذه النسخة, قم بعمل إرسال رسالة مجددا في الواتسأب وأنتظر نصف دقيقة وأضغط تحديث, في حالة لم يصل بعد قم بإلغائه وشراء رقم آخر.
 
@@ -1022,7 +1046,7 @@ bot('EditMessageText',[
 'message_id'=>$message_id,
 'text'=>"
 👨‍✈️ *⁞ مرحبا بك* [$first](tg://user?id=$id) ؛
-🏛 *⁞ هذه تفاصيل حسابك في بوت. @pilotoooo* ⬇️
+🏛 *⁞ هذه تفاصيل حسابك في بوت. @you_k711* ⬇️
 
 📨︙حسابك: *$emile* 
 💰︙رصيدك: *₽ $Balance 💸*
@@ -1061,16 +1085,16 @@ bot('EditMessageText',[
 'text'=>"
 ♐️ - مرحبا بك [$first](tg://user?id=$id) ؛ 🤍
 
-*- في بوت @pilotoooo ؛ البوت الأفضل على التليجرام والذي يقوم بتوفير *خدمات الأرقام الوهمية* ل مواقع السوشيال ميديا مثل *التيليجرام والواتساب والتويتر وغيره* 👾
+*- في بوت @you_k711 ؛ البوت الأفضل على التليجرام والذي يقوم بتوفير *خدمات الأرقام الوهمية* ل مواقع السوشيال ميديا مثل *التيليجرام والواتساب والتويتر وغيره* 👾
 
-*- قم بإنشاء حساب جديد* ؛ واذا كان لديك حساب من قبل: قم بالضغط على زر *تسجيل الدخول* ☑️
+*- تم تسجيل دخولك تلقائيًا، ويمكنك استخدام البوت مباشرةً. ☑️*
 ",
 'parse_mode'=>"MarkDown",
 'disable_web_page_preview'=>true,
 'reply_markup'=>json_encode([
 'inline_keyboard'=>[
-[['text'=>'لديكَ حساب؟ تسجيل دخول 📲','callback_data'=>"login"]],
-[['text'=>'إنشاء حساب جديد ☑️','callback_data'=>"sign_in"]],
+
+
 [['text'=>'شروط الإستخدام وإخلاء للمسؤلية 🚨','callback_data'=>"to_explain"]],
 [["text"=>'إدارة البوت 👨🏻‍💻',"url"=>"tg://user?id=$sudo"]],
 [['text'=>'هام للأعضاء الجُدد ⚠️','callback_data'=>"Important"]],
@@ -1132,17 +1156,17 @@ bot('SendMessage',[
 'text'=>"
 ♐️ - مرحبا بك [$first](tg://user?id=$id) ؛ 🤍
 
-*- في بوت @pilotoooo* ؛ البوت الأفضل على التليجرام والذي يقوم بتوفير *خدمات الأرقام الوهمية* ل مواقع السوشيال ميديا مثل *التيليجرام والواتساب والتويتر وغيره* 👾
+*- في بوت @you_k711* ؛ البوت الأفضل على التليجرام والذي يقوم بتوفير *خدمات الأرقام الوهمية* ل مواقع السوشيال ميديا مثل *التيليجرام والواتساب والتويتر وغيره* 👾
 
-*- قم بإنشاء حساب جديد* ؛ واذا كان لديك حساب من قبل: قم بالضغط على زر *تسجيل الدخول* ☑️
+*- تم تسجيل دخولك تلقائيًا، ويمكنك استخدام البوت مباشرةً. ☑️*
 ",
 'parse_mode'=>"MarkDown",
 'disable_web_page_preview'=>true,
 'reply_to_message_id'=>$message_id,
 'reply_markup'=>json_encode([
 'inline_keyboard'=>[
-[['text'=>'لديكَ حساب؟ تسجيل دخول 📲','callback_data'=>"login"]],
-[['text'=>'إنشاء حساب جديد ☑️','callback_data'=>"sign_in"]],
+
+
 [['text'=>'شروط الإستخدام وإخلاء للمسؤلية 🚨','callback_data'=>"to_explain"]],
 [["text"=>'إدارة البوت 👨🏻‍💻',"url"=>"tg://user?id=$sudo"]],
 [['text'=>'هام للأعضاء الجُدد ⚠️','callback_data'=>"Important"]],
@@ -1162,17 +1186,17 @@ bot('EditMessageText',[
 'text'=>"
 ♐️ - مرحبا بك [$first](tg://user?id=$id) ؛ 🤍
 
-*- في بوت @pilotoooo* ؛ البوت الأفضل على التليجرام والذي يقوم بتوفير *خدمات الأرقام الوهمية* ل مواقع السوشيال ميديا مثل *التيليجرام والواتساب والتويتر وغيره* 👾
+*- في بوت @you_k711* ؛ البوت الأفضل على التليجرام والذي يقوم بتوفير *خدمات الأرقام الوهمية* ل مواقع السوشيال ميديا مثل *التيليجرام والواتساب والتويتر وغيره* 👾
 
-*- قم بإنشاء حساب جديد* ؛ واذا كان لديك حساب من قبل: قم بالضغط على زر *تسجيل الدخول* ☑️
+*- تم تسجيل دخولك تلقائيًا، ويمكنك استخدام البوت مباشرةً. ☑️*
 ",
 'parse_mode'=>"MarkDown",
 'disable_web_page_preview'=>true,
 'reply_to_message_id'=>$message_id,
 'reply_markup'=>json_encode([
 'inline_keyboard'=>[
-[['text'=>'لديكَ حساب؟ تسجيل دخول 📲','callback_data'=>"login"]],
-[['text'=>'إنشاء حساب جديد ☑️','callback_data'=>"sign_in"]],
+
+
 [['text'=>'شروط الإستخدام وإخلاء للمسؤلية 🚨','callback_data'=>"to_explain"]],
 [["text"=>'إدارة البوت 👨🏻‍💻',"url"=>"tg://user?id=$sudo"]],
 [['text'=>'هام للأعضاء الجُدد ⚠️','callback_data'=>"Important"]],
@@ -1706,7 +1730,7 @@ bot('EditMessageText',[
 [['text'=>'🔑︙تعديل كلمة سر الحساب','callback_data'=>"changepass"]],
 [['text'=>'🔄︙تحويل روبل إلى حساب','callback_data'=>"SendCoin"]],
 [['text'=>'☑️︙إستلام تحويل روبل','callback_data'=>"receiptpri"]],
-[['text'=>'✅︙الدخول بحساب آخر','callback_data'=>"login_2"]],
+
 [['text'=>'⚠️︙تسجيل الخروج من الحساب','callback_data'=>"logout"]],
 [['text'=>'- رجوع.','callback_data'=>'back']]
 ]
@@ -2423,7 +2447,7 @@ unlink("data/id/$id/step.txt");
 }
 }
 #========={تسجيل الدخول_2}==========#
-if($data == "login_2"){
+if(false && $data == "login_2"){
 $emile = $EMIL[$chat_id]['emil'];
 $password = $EMILS['emils'][$emile]['pass'];
 bot('EditMessageText',[
@@ -2591,17 +2615,17 @@ bot('sendMessage',[
 'text'=>"
 ♐️ - مرحبا بك [$first](tg://user?id=$id) ؛ 🤍
 
-*- في بوت @pilotoooo* ؛ البوت الأفضل على التليجرام والذي يقوم بتوفير *خدمات الأرقام الوهمية* ل مواقع السوشيال ميديا مثل *التيليجرام والواتساب والتويتر وغيره* 👾
+*- في بوت @you_k711* ؛ البوت الأفضل على التليجرام والذي يقوم بتوفير *خدمات الأرقام الوهمية* ل مواقع السوشيال ميديا مثل *التيليجرام والواتساب والتويتر وغيره* 👾
 
-*- قم بإنشاء حساب جديد* ؛ واذا كان لديك حساب من قبل: قم بالضغط على زر *تسجيل الدخول* ☑️
+*- تم تسجيل دخولك تلقائيًا، ويمكنك استخدام البوت مباشرةً. ☑️*
 ",
 'parse_mode'=>"MarkDown",
 'disable_web_page_preview'=>true,
 'reply_to_message_id'=>$message_id,
 'reply_markup'=>json_encode([
 'inline_keyboard'=>[
-[['text'=>'لديكَ حساب؟ تسجيل دخول 📲','callback_data'=>"login"]],
-[['text'=>'إنشاء حساب جديد ☑️','callback_data'=>"sign_in"]],
+
+
 [['text'=>'شروط الإستخدام وإخلاء للمسؤلية 🚨','callback_data'=>"to_explain"]],
 [["text"=>'إدارة البوت 👨🏻‍💻',"url"=>"tg://user?id=$sudo"]],
 [['text'=>'هام للأعضاء الجُدد ⚠️','callback_data'=>"Important"]],
@@ -3985,7 +4009,7 @@ bot('EditMessageText',[
 'chat_id'=>$chat_id,
 'message_id'=>$message_id,
 'text'=>"
-🧑‍✈️ *- أهلا بك عزيزي العميل* في قسم وكلاء البوت الرسميين في بوت *@pilotoooo* ☑️
+🧑‍✈️ *- أهلا بك عزيزي العميل* في قسم وكلاء البوت الرسميين في بوت *@you_k711* ☑️
 ",
 'parse_mode'=>"MarkDown",
 'reply_markup'=>($keyboad),
