@@ -185,7 +185,12 @@ $cardbot = $ORDERALL['card']; #عدد الكروت المباعة#
 $sendbot = $ORDERALL['send']; #عدد عمليات التحويل#
 $money2 = file_get_contents("data/txt/rubleall.txt"); #الروبل اللكلي#
 $poi_money = file_get_contents("data/txt/pointall.txt"); #الروبل المتبقي#
-$money = $money2 - $poi_money; #الروبل المستهلك#
+// تحويل المتغيرات إلى أرقام قسرياً لمنع خطأ الطرح الحسابي للنصوص
+$money2_numeric = (float)$money2;
+$poi_money_numeric = (float)$poi_money;
+
+$money = $money2_numeric - $poi_money_numeric; #الروبل المستهلك#
+
 $allcharges = $ORDERALL['add']; #عدد الشحن ب المرات#
 $assignru=0.25; #نسبة ربح رابط الدعوة#
 $Exchange=60; #سعر الدولار#
