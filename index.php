@@ -218,12 +218,13 @@ $Detector = file_get_contents("data/id/$id/restriction.txt");
 $step = file_get_contents("data/id/$id/step.txt");
 $twas = file_get_contents("data/id/$id/twas.txt");
 $buynumber = file_get_contents("data/id/$id/number.txt");
-$exstep=explode("|", $step);
-$extext = explode("\n", $text);
-$ex_text=explode(" ", $text);
-$ex__text=explode("-", $text);
-$exdata=explode("-", $data);
-$ex_data=explode("#", $data);
+$exstep   = (!empty($step)) ? explode("|", $step) : [];
+$extext   = (!empty($text)) ? explode("\n", $text) : [];
+$ex_text  = (!empty($text)) ? explode(" ", $text) : [];
+$ex__text = (!empty($text)) ? explode("-", $text) : [];
+$exdata   = (!empty($data)) ? explode("-", $data) : [];
+$ex_data  = (!empty($data)) ? explode("#", $data) : [];
+
 // تعديل السطر 226 لحماية دالة count من الـ null
 $ordermy = (isset($BUYSNUM['number']) && is_array($BUYSNUM['number'])) ? count($BUYSNUM['number']) : 0; #عدد الأرقام المشترى#
 
