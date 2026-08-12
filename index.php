@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ERROR | E_PARSE);
 
 // By @v_9_k_e
 
@@ -223,8 +224,12 @@ $ex_text=explode(" ", $text);
 $ex__text=explode("-", $text);
 $exdata=explode("-", $data);
 $ex_data=explode("#", $data);
-$ordermy = count($BUYSNUM['number']); #عدد الأرقام المشترى#
-$numbuy = $BUYSNUM['number_my']; #عدد الأرقام المشترى#
+// تعديل السطر 226 لحماية دالة count من الـ null
+$ordermy = (isset($BUYSNUM['number']) && is_array($BUYSNUM['number'])) ? count($BUYSNUM['number']) : 0; #عدد الأرقام المشترى#
+
+// تعديل السطر الخاص بـ number_my وإضافة علامات التنصيص
+$numbuy = (isset($BUYSNUM['number_my'])) ? $BUYSNUM['number_my'] : 0; #عدد الأرقام المشترى#
+
 $readymy = $BUYSNUM[ready_my]; #عدد الأرقام الجاهزة#
 $orderall = count($ORDERALL)+1; #عدد مشتريات الاعضاء#
 $idnums = count($ORDERALL)+999999999; #عدد مشتريات الاعضاء#
