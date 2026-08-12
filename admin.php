@@ -167,7 +167,7 @@ $bb = "فتح السماح ✅";
 bot('answercallbackquery',[
 'callback_query_id'=>$update->callback_query->id,
 'text'=>"تم $bb",
-'show_alert'=>folse
+'show_alert'=>false
 ]);
 bot('EditMessageText',[
 'chat_id'=>$chat_id,
@@ -906,7 +906,7 @@ $bb="اليدوي";
 bot('answercallbackquery',[
 'callback_query_id'=>$update->callback_query->id,
 'text'=>"تم تغيير النظام إلى $bb ✅",
-'show_alert'=>folse
+'show_alert'=>false
 ]);
 bot('EditMessageText',[
 'chat_id'=>$chat_id,
@@ -1171,7 +1171,7 @@ $bb="تم حذف المورد بنجاح ✅";
 bot('answercallbackquery',[
 'callback_query_id'=>$update->callback_query->id,
 'text'=>"$bb",
-'show_alert'=>folse
+'show_alert'=>false
 ]);
 bot('EditMessageText',[
 'chat_id'=>$chat_id,
@@ -1360,7 +1360,7 @@ $bb="تم حذف التطبيق بنجاح ✅";
 bot('answercallbackquery',[
 'callback_query_id'=>$update->callback_query->id,
 'text'=>"$bb",
-'show_alert'=>folse
+'show_alert'=>false
 ]);
 bot('EditMessageText',[
 'chat_id'=>$chat_id,
@@ -1561,12 +1561,12 @@ $b="addservice-$app-$add-$api-$zero";
 $b="addprice-$app-$add-$api-$zero-any";
 }
 $e++;
-$key[inline_keyboard][$i][]=[text=>"$ar",callback_data=>"$b"];
+$key['inline_keyboard'][$i][]=['text'=>"$ar",'callback_data'=>"$b"];
 if($e%3 == 0) $i++;
 }
 $key['inline_keyboard'][0] = [['text'=>'☑️ - جميع الدول في الأسفل ⬇️','callback_data'=>"no"]];
 $key['inline_keyboard'][] = [['text'=>"$t",'callback_data'=>"iA-$app-$add-$api-$o"],['text'=>"$s",'callback_data'=>"iA-$app-$add-$api-$u"],['text'=>"$v",'callback_data'=>"iA-$app-$add-$api-8"],['text'=>"$n",'callback_data'=>"iA-$app-$add-$api-1"]];
-$key[inline_keyboard][]=[['text'=>"رجوع",'callback_data'=>"Bj-$api"]];
+$key['inline_keyboard'][]=[['text'=>"رجوع",'callback_data'=>"Bj-$api"]];
 $keyboad      = json_encode($key);
 bot('EditMessageText',[
 'chat_id'=>$chat_id,
@@ -1602,24 +1602,24 @@ unlink("data/id/$id/step.txt");
 }else{
 $a=0;//keyboard
 $b=0;//count
-foreach ($_co[country3] as $zero=>$ar){
+foreach ($_co['country3'] as $zero=>$ar){
 $API=str_replace(["Di"],["Vak-sms.com"],$api);
 $b++;
 if($b%3!=0){
-$key[inline_keyboard][$a][]=[text=>"$ar",callback_data=>"addprice-$app-$add-$api-$zero-any"];
+$key['inline_keyboard'][$a][]=['text'=>"$ar",'callback_data'=>"addprice-$app-$add-$api-$zero-any"];
 }else{
 $a++;//لنزول سطر
-$key[inline_keyboard][$a][]=[text=>"$ar",callback_data=>"addprice-$app-$add-$api-$zero-any"];
+$key['inline_keyboard'][$a][]=['text'=>"$ar",'callback_data'=>"addprice-$app-$add-$api-$zero-any"];
 }
 }
-$key[inline_keyboard][]=[['text'=>"رجوع",'callback_data'=>"Bj-$api"]];
+$key['inline_keyboard'][]=[['text'=>"رجوع",'callback_data'=>"Bj-$api"]];
 bot('EditMessageText',[
 'chat_id'=>$chat_id,
 'message_id'=>$message_id,
 'text'=>"
 ❇️ هذة جميع الدول المتوفرة في الموقع $API
 ",
-reply_markup=>json_encode($key)
+'reply_markup'=>json_encode($key)
 ]);
 unlink("zzz.json");
 unlink("data/id/$id/step.txt");
@@ -1647,24 +1647,24 @@ unlink("data/id/$id/step.txt");
 }else{
 $a=0;//keyboard
 $b=0;//count
-foreach ($_co[country4] as $zero=>$ar){
+foreach ($_co['country4'] as $zero=>$ar){
 $API=str_replace(["Ei"],["sms-acktiwator.ru"],$api);
 $b++;
 if($b%3!=0){
-$key[inline_keyboard][$a][]=[text=>"$ar",callback_data=>"addprice-$app-$add-$api-$zero-any"];
+$key['inline_keyboard'][$a][]=['text'=>"$ar",'callback_data'=>"addprice-$app-$add-$api-$zero-any"];
 }else{
 $a++;//لنزول سطر
-$key[inline_keyboard][$a][]=[text=>"$ar",callback_data=>"addprice-$app-$add-$api-$zero-any"];
+$key['inline_keyboard'][$a][]=['text'=>"$ar",'callback_data'=>"addprice-$app-$add-$api-$zero-any"];
 }
 }
-$key[inline_keyboard][]=[['text'=>"رجوع",'callback_data'=>"Bj-$api"]];
+$key['inline_keyboard'][]=[['text'=>"رجوع",'callback_data'=>"Bj-$api"]];
 bot('EditMessageText',[
 'chat_id'=>$chat_id,
 'message_id'=>$message_id,
 'text'=>"
 ❇️ هذة جميع الدول المتوفرة في الموقع $API
 ",
-reply_markup=>json_encode($key)
+'reply_markup'=>json_encode($key)
 ]);
 unlink("zzz.json");
 unlink("data/id/$id/step.txt");
@@ -1684,8 +1684,8 @@ if($app=="fu" or $app=="au" or $app=="ot"){
 $app="NO";
 }
 }
-if($con == 1) { $continent     = $_co[country5];  }
-if($con == 2) { $continent     = $_co[country5_2];  }
+if($con == 1) { $continent     = $_co['country5'];  }
+if($con == 2) { $continent     = $_co['country5_2'];  }
 if($app == 'NO'){
 bot('answercallbackquery',[
 'callback_query_id'=>$update->callback_query->id,
@@ -1709,11 +1709,11 @@ $key     = [];
 foreach ($continent as $zero=>$ar){
 $API=str_replace(["Fi"],["pvapins.com"],$api);
 $e++;
-$key[inline_keyboard][$i][]=[text=>"$ar",callback_data=>"addprice-$app-$add-$api-$zero-any"];
+$key['inline_keyboard'][$i][]=['text'=>"$ar",'callback_data'=>"addprice-$app-$add-$api-$zero-any"];
 if($e%3 == 0) $i++;
 }
-$key[inline_keyboard][]=[['text'=>"$t",'callback_data'=>"iD-$app-$add-$api-2"],['text'=>"$s",'callback_data'=>"iD-$app-$add-$api-1"]];
-$key[inline_keyboard][]=[['text'=>"رجوع",'callback_data'=>"Bj-$api"]];
+$key['inline_keyboard'][]=[['text'=>"$t",'callback_data'=>"iD-$app-$add-$api-2"],['text'=>"$s",'callback_data'=>"iD-$app-$add-$api-1"]];
+$key['inline_keyboard'][]=[['text'=>"رجوع",'callback_data'=>"Bj-$api"]];
 $keyboad      = json_encode($key);
 bot('EditMessageText',[
 'chat_id'=>$chat_id,
@@ -1759,24 +1759,24 @@ unlink("data/id/$id/step.txt");
 }else{
 $a=0;//keyboard
 $b=0;//count
-foreach ($_co[country8] as $zero=>$ar){
+foreach ($_co['country8'] as $zero=>$ar){
 $API=str_replace(["Gi","Ki","Ui"],["sms3t.com","viotp.com","sellotp.com"],$api);
 $b++;
 if($b%3!=0){
-$key[inline_keyboard][$a][]=[text=>"$ar",callback_data=>"addservice2-$app-$add-$api-$zero"];
+$key['inline_keyboard'][$a][]=['text'=>"$ar",'callback_data'=>"addservice2-$app-$add-$api-$zero"];
 }else{
 $a++;//لنزول سطر
-$key[inline_keyboard][$a][]=[text=>"$ar",callback_data=>"addservice2-$app-$add-$api-$zero"];
+$key['inline_keyboard'][$a][]=['text'=>"$ar",'callback_data'=>"addservice2-$app-$add-$api-$zero"];
 }
 }
-$key[inline_keyboard][]=[['text'=>"رجوع",'callback_data'=>"Bj-$api"]];
+$key['inline_keyboard'][]=[['text'=>"رجوع",'callback_data'=>"Bj-$api"]];
 bot('EditMessageText',[
 'chat_id'=>$chat_id,
 'message_id'=>$message_id,
 'text'=>"
 ❇️ هذة جميع الدول المتوفرة في الموقع $API
 ",
-reply_markup=>json_encode($key)
+'reply_markup'=>json_encode($key)
 ]);
 unlink("zzz.json");
 unlink("data/id/$id/step.txt");
@@ -1804,24 +1804,24 @@ unlink("data/id/$id/step.txt");
 }else{
 $a=0;//keyboard
 $b=0;//count
-foreach ($_co[country6] as $zero=>$ar){
+foreach ($_co['country6'] as $zero=>$ar){
 $API=str_replace(["Hi"],["onlinesim.io"],$api);
 $b++;
 if($b%3!=0){
-$key[inline_keyboard][$a][]=[text=>"$ar",callback_data=>"addprice-$app-$add-$api-$zero-any"];
+$key['inline_keyboard'][$a][]=['text'=>"$ar",'callback_data'=>"addprice-$app-$add-$api-$zero-any"];
 }else{
 $a++;//لنزول سطر
-$key[inline_keyboard][$a][]=[text=>"$ar",callback_data=>"addprice-$app-$add-$api-$zero-any"];
+$key['inline_keyboard'][$a][]=['text'=>"$ar",'callback_data'=>"addprice-$app-$add-$api-$zero-any"];
 }
 }
-$key[inline_keyboard][]=[['text'=>"رجوع",'callback_data'=>"Bj-$api"]];
+$key['inline_keyboard'][]=[['text'=>"رجوع",'callback_data'=>"Bj-$api"]];
 bot('EditMessageText',[
 'chat_id'=>$chat_id,
 'message_id'=>$message_id,
 'text'=>"
 ❇️ هذة جميع الدول المتوفرة في الموقع $API
 ",
-reply_markup=>json_encode($key)
+'reply_markup'=>json_encode($key)
 ]);
 unlink("zzz.json");
 unlink("data/id/$id/step.txt");
@@ -1841,8 +1841,8 @@ if($app=="au" or $app=="ot"){
 $app="NO";
 }
 }
-if($con == 1) { $continent     = $_co[country7];  }
-if($con == 2) { $continent     = $_co[country7_2];  }
+if($con == 1) { $continent     = $_co['country7'];  }
+if($con == 2) { $continent     = $_co['country7_2'];  }
 if($app == 'NO'){
 bot('answercallbackquery',[
 'callback_query_id'=>$update->callback_query->id,
@@ -1866,11 +1866,11 @@ $key     = [];
 foreach ($continent as $zero=>$ar){
 $API=str_replace(["Ji"],["supersmstech.com"],$api);
 $e++;
-$key[inline_keyboard][$i][]=[text=>"$ar",callback_data=>"addservice3-$app-$add-$api-$zero"];
+$key['inline_keyboard'][$i][]=['text'=>"$ar",'callback_data'=>"addservice3-$app-$add-$api-$zero"];
 if($e%3 == 0) $i++;
 }
-$key[inline_keyboard][]=[['text'=>"$t",'callback_data'=>"iG-$app-$add-$api-2"],['text'=>"$s",'callback_data'=>"iG-$app-$add-$api-1"]];
-$key[inline_keyboard][]=[['text'=>"رجوع",'callback_data'=>"Bj-$api"]];
+$key['inline_keyboard'][]=[['text'=>"$t",'callback_data'=>"iG-$app-$add-$api-2"],['text'=>"$s",'callback_data'=>"iG-$app-$add-$api-1"]];
+$key['inline_keyboard'][]=[['text'=>"رجوع",'callback_data'=>"Bj-$api"]];
 $keyboad      = json_encode($key);
 bot('EditMessageText',[
 'chat_id'=>$chat_id,
@@ -1906,24 +1906,24 @@ unlink("data/id/$id/step.txt");
 }else{
 $a=0;//keyboard
 $b=0;//count
-foreach ($_co[country9] as $zero=>$ar){
+foreach ($_co['country9'] as $zero=>$ar){
 $API=str_replace(["Li"],["simsms.org"],$api);
 $b++;
 if($b%3!=0){
-$key[inline_keyboard][$a][]=[text=>"$ar",callback_data=>"addprice-$app-$add-$api-$zero-any"];
+$key['inline_keyboard'][$a][]=['text'=>"$ar",'callback_data'=>"addprice-$app-$add-$api-$zero-any"];
 }else{
 $a++;//لنزول سطر
-$key[inline_keyboard][$a][]=[text=>"$ar",callback_data=>"addprice-$app-$add-$api-$zero-any"];
+$key['inline_keyboard'][$a][]=['text'=>"$ar",'callback_data'=>"addprice-$app-$add-$api-$zero-any"];
 }
 }
-$key[inline_keyboard][]=[['text'=>"رجوع",'callback_data'=>"Bj-$api"]];
+$key['inline_keyboard'][]=[['text'=>"رجوع",'callback_data'=>"Bj-$api"]];
 bot('EditMessageText',[
 'chat_id'=>$chat_id,
 'message_id'=>$message_id,
 'text'=>"
 ❇️ هذة جميع الدول المتوفرة في الموقع $API
 ",
-reply_markup=>json_encode($key)
+'reply_markup'=>json_encode($key)
 ]);
 unlink("zzz.json");
 unlink("data/id/$id/step.txt");
@@ -1943,8 +1943,8 @@ if($app=="fu" or $app=="au" or $app=="ot"){
 $app="NO";
 }
 }
-if($con == 1) { $continent     = $_co[country10];  }
-if($con == 2) { $continent     = $_co[country10_2];  }
+if($con == 1) { $continent     = $_co['country10'];  }
+if($con == 2) { $continent     = $_co['country10_2'];  }
 if($app == 'NO'){
 bot('answercallbackquery',[
 'callback_query_id'=>$update->callback_query->id,
@@ -1968,11 +1968,11 @@ $key     = [];
 foreach ($continent as $zero=>$ar){
 $API=str_replace(["Mi"],["grizzlysms.com"],$api);
 $e++;
-$key[inline_keyboard][$i][]=[text=>"$ar",callback_data=>"addprice-$app-$add-$api-$zero-any"];
+$key['inline_keyboard'][$i][]=['text'=>"$ar",'callback_data'=>"addprice-$app-$add-$api-$zero-any"];
 if($e%3 == 0) $i++;
 }
-$key[inline_keyboard][]=[['text'=>"$t",'callback_data'=>"iJ-$app-$add-$api-2"],['text'=>"$s",'callback_data'=>"iJ-$app-$add-$api-1"]];
-$key[inline_keyboard][]=[['text'=>"رجوع",'callback_data'=>"Bj-$api"]];
+$key['inline_keyboard'][]=[['text'=>"$t",'callback_data'=>"iJ-$app-$add-$api-2"],['text'=>"$s",'callback_data'=>"iJ-$app-$add-$api-1"]];
+$key['inline_keyboard'][]=[['text'=>"رجوع",'callback_data'=>"Bj-$api"]];
 $keyboad      = json_encode($key);
 bot('EditMessageText',[
 'chat_id'=>$chat_id,
@@ -2000,8 +2000,8 @@ if($app=="au"){
 $app="NO";
 }
 }
-if($con == 1) { $continent     = $_co[country11];  }
-if($con == 2) { $continent     = $_co[country11_2];  }
+if($con == 1) { $continent     = $_co['country11'];  }
+if($con == 2) { $continent     = $_co['country11_2'];  }
 if($app == 'NO'){
 bot('answercallbackquery',[
 'callback_query_id'=>$update->callback_query->id,
@@ -2025,11 +2025,11 @@ $key     = [];
 foreach ($continent as $zero=>$ar){
 $API=str_replace(["Ni"],["sms-code.ru"],$api);
 $e++;
-$key[inline_keyboard][$i][]=[text=>"$ar",callback_data=>"addprice-$app-$add-$api-$zero-any"];
+$key['inline_keyboard'][$i][]=['text'=>"$ar",'callback_data'=>"addprice-$app-$add-$api-$zero-any"];
 if($e%3 == 0) $i++;
 }
-$key[inline_keyboard][]=[['text'=>"$t",'callback_data'=>"iK-$app-$add-$api-2"],['text'=>"$s",'callback_data'=>"iK-$app-$add-$api-1"]];
-$key[inline_keyboard][]=[['text'=>"رجوع",'callback_data'=>"Bj-$api"]];
+$key['inline_keyboard'][]=[['text'=>"$t",'callback_data'=>"iK-$app-$add-$api-2"],['text'=>"$s",'callback_data'=>"iK-$app-$add-$api-1"]];
+$key['inline_keyboard'][]=[['text'=>"رجوع",'callback_data'=>"Bj-$api"]];
 $keyboad      = json_encode($key);
 bot('EditMessageText',[
 'chat_id'=>$chat_id,
@@ -2057,8 +2057,8 @@ if($app=="au"){
 $app="NO";
 }
 }
-if($con == 1) { $continent     = $_co[country12];  }
-if($con == 2) { $continent     = $_co[country12_2];  }
+if($con == 1) { $continent     = $_co['country12'];  }
+if($con == 2) { $continent     = $_co['country12_2'];  }
 if($app == 'NO'){
 bot('answercallbackquery',[
 'callback_query_id'=>$update->callback_query->id,
@@ -2082,11 +2082,11 @@ $key     = [];
 foreach ($continent as $zero=>$ar){
 $API=str_replace(["Oi"],["tiger-sms.com"],$api);
 $e++;
-$key[inline_keyboard][$i][]=[text=>"$ar",callback_data=>"addprice-$app-$add-$api-$zero-any"];
+$key['inline_keyboard'][$i][]=['text'=>"$ar",'callback_data'=>"addprice-$app-$add-$api-$zero-any"];
 if($e%3 == 0) $i++;
 }
-$key[inline_keyboard][]=[['text'=>"$t",'callback_data'=>"iL-$app-$add-$api-2"],['text'=>"$s",'callback_data'=>"iL-$app-$add-$api-1"]];
-$key[inline_keyboard][]=[['text'=>"رجوع",'callback_data'=>"Bj-$api"]];
+$key['inline_keyboard'][]=[['text'=>"$t",'callback_data'=>"iL-$app-$add-$api-2"],['text'=>"$s",'callback_data'=>"iL-$app-$add-$api-1"]];
+$key['inline_keyboard'][]=[['text'=>"رجوع",'callback_data'=>"Bj-$api"]];
 $keyboad      = json_encode($key);
 bot('EditMessageText',[
 'chat_id'=>$chat_id,
@@ -2114,8 +2114,8 @@ if($app=="im" or $app=="au"){
 $app="NO";
 }
 }
-if($con == 1) { $continent     = $_co[country13];  }
-if($con == 2) { $continent     = $_co[country13_2];  }
+if($con == 1) { $continent     = $_co['country13'];  }
+if($con == 2) { $continent     = $_co['country13_2'];  }
 if($app == 'NO'){
 bot('answercallbackquery',[
 'callback_query_id'=>$update->callback_query->id,
@@ -2139,11 +2139,11 @@ $key     = [];
 foreach ($continent as $zero=>$ar){
 $API=str_replace(["Pi"],["2ndline.io"],$api);
 $e++;
-$key[inline_keyboard][$i][]=[text=>"$ar",callback_data=>"addservice2-$app-$add-$api-$zero"];
+$key['inline_keyboard'][$i][]=['text'=>"$ar",'callback_data'=>"addservice2-$app-$add-$api-$zero"];
 if($e%3 == 0) $i++;
 }
-$key[inline_keyboard][]=[['text'=>"$t",'callback_data'=>"iM-$app-$add-$api-2"],['text'=>"$s",'callback_data'=>"iM-$app-$add-$api-1"]];
-$key[inline_keyboard][]=[['text'=>"رجوع",'callback_data'=>"Bj-$api"]];
+$key['inline_keyboard'][]=[['text'=>"$t",'callback_data'=>"iM-$app-$add-$api-2"],['text'=>"$s",'callback_data'=>"iM-$app-$add-$api-1"]];
+$key['inline_keyboard'][]=[['text'=>"رجوع",'callback_data'=>"Bj-$api"]];
 $keyboad      = json_encode($key);
 bot('EditMessageText',[
 'chat_id'=>$chat_id,
@@ -2171,8 +2171,8 @@ if($app=="lf" or $app=="im" or $app=="fu" or $app=="au" or $app=="ot"){
 $app="NO";
 }
 }
-if($con == 1) { $continent     = $_co[country14];  }
-if($con == 2) { $continent     = $_co[country14_2];  }
+if($con == 1) { $continent     = $_co['country14'];  }
+if($con == 2) { $continent     = $_co['country14_2'];  }
 if($app == 'NO'){
 bot('answercallbackquery',[
 'callback_query_id'=>$update->callback_query->id,
@@ -2196,11 +2196,11 @@ $key     = [];
 foreach ($continent as $zero=>$ar){
 $API=str_replace(["Qi"],["receivesms.store"],$api);
 $e++;
-$key[inline_keyboard][$i][]=[text=>"$ar",callback_data=>"addprice-$app-$add-$api-$zero-any"];
+$key['inline_keyboard'][$i][]=['text'=>"$ar",'callback_data'=>"addprice-$app-$add-$api-$zero-any"];
 if($e%3 == 0) $i++;
 }
-$key[inline_keyboard][]=[['text'=>"$t",'callback_data'=>"iN-$app-$add-$api-2"],['text'=>"$s",'callback_data'=>"iN-$app-$add-$api-1"]];
-$key[inline_keyboard][]=[['text'=>"رجوع",'callback_data'=>"Bj-$api"]];
+$key['inline_keyboard'][]=[['text'=>"$t",'callback_data'=>"iN-$app-$add-$api-2"],['text'=>"$s",'callback_data'=>"iN-$app-$add-$api-1"]];
+$key['inline_keyboard'][]=[['text'=>"رجوع",'callback_data'=>"Bj-$api"]];
 $keyboad      = json_encode($key);
 bot('EditMessageText',[
 'chat_id'=>$chat_id,
@@ -2228,8 +2228,8 @@ if($app=="ot"){
 $app="NO";
 }
 }
-if($con == 1) { $continent     = $_co[country15];  }
-if($con == 2) { $continent     = $_co[country15_2];  }
+if($con == 1) { $continent     = $_co['country15'];  }
+if($con == 2) { $continent     = $_co['country15_2'];  }
 if($app == 'NO'){
 bot('answercallbackquery',[
 'callback_query_id'=>$update->callback_query->id,
@@ -2253,11 +2253,11 @@ $key     = [];
 foreach ($continent as $zero=>$ar){
 $API=str_replace(["Ri"],["sms.fastpva.com"],$api);
 $e++;
-$key[inline_keyboard][$i][]=[text=>"$ar",callback_data=>"addservice4-$app-$add-$api-$zero"];
+$key['inline_keyboard'][$i][]=['text'=>"$ar",'callback_data'=>"addservice4-$app-$add-$api-$zero"];
 if($e%3 == 0) $i++;
 }
-$key[inline_keyboard][]=[['text'=>"$t",'callback_data'=>"iO-$app-$add-$api-2"],['text'=>"$s",'callback_data'=>"iO-$app-$add-$api-1"]];
-$key[inline_keyboard][]=[['text'=>"رجوع",'callback_data'=>"Bj-$api"]];
+$key['inline_keyboard'][]=[['text'=>"$t",'callback_data'=>"iO-$app-$add-$api-2"],['text'=>"$s",'callback_data'=>"iO-$app-$add-$api-1"]];
+$key['inline_keyboard'][]=[['text'=>"رجوع",'callback_data'=>"Bj-$api"]];
 $keyboad      = json_encode($key);
 bot('EditMessageText',[
 'chat_id'=>$chat_id,
@@ -2293,24 +2293,24 @@ unlink("data/id/$id/step.txt");
 }else{
 $a=0;//keyboard
 $b=0;//count
-foreach ($_co[country16] as $zero=>$ar){
+foreach ($_co['country16'] as $zero=>$ar){
 $API=str_replace(["Si"],["dropsms.ru"],$api);
 $b++;
 if($b%2!=0){
-$key[inline_keyboard][$a][]=[text=>"$ar",callback_data=>"addprice-$app-$add-$api-$zero-any"];
+$key['inline_keyboard'][$a][]=['text'=>"$ar",'callback_data'=>"addprice-$app-$add-$api-$zero-any"];
 }else{
 $a++;//لنزول سطر
-$key[inline_keyboard][$a][]=[text=>"$ar",callback_data=>"addprice-$app-$add-$api-$zero-any"];
+$key['inline_keyboard'][$a][]=['text'=>"$ar",'callback_data'=>"addprice-$app-$add-$api-$zero-any"];
 }
 }
-$key[inline_keyboard][]=[['text'=>"رجوع",'callback_data'=>"Bj-$api"]];
+$key['inline_keyboard'][]=[['text'=>"رجوع",'callback_data'=>"Bj-$api"]];
 bot('EditMessageText',[
 'chat_id'=>$chat_id,
 'message_id'=>$message_id,
 'text'=>"
 ❇️ هذة جميع الدول المتوفرة في الموقع $API
 ",
-reply_markup=>json_encode($key)
+'reply_markup'=>json_encode($key)
 ]);
 unlink("zzz.json");
 unlink("data/id/$id/step.txt");
@@ -2325,8 +2325,8 @@ $con=$exdata[4];
 if($con==null){
 $con=1;
 }
-if($con == 1) { $continent     = $_co[country17];  }
-if($con == 2) { $continent     = $_co[country17_2];  }
+if($con == 1) { $continent     = $_co['country17'];  }
+if($con == 2) { $continent     = $_co['country17_2'];  }
 if($app == 'NO'){
 bot('answercallbackquery',[
 'callback_query_id'=>$update->callback_query->id,
@@ -2350,11 +2350,11 @@ $key     = [];
 foreach ($continent as $zero=>$ar){
 $API=str_replace(["Ti"],["24sms7.com"],$api);
 $e++;
-$key[inline_keyboard][$i][]=[text=>"$ar",callback_data=>"addprice-$app-$add-$api-$zero-any"];
+$key['inline_keyboard'][$i][]=['text'=>"$ar",'callback_data'=>"addprice-$app-$add-$api-$zero-any"];
 if($e%3 == 0) $i++;
 }
-$key[inline_keyboard][]=[['text'=>"$t",'callback_data'=>"iQ-$app-$add-$api-2"],['text'=>"$s",'callback_data'=>"iQ-$app-$add-$api-1"]];
-$key[inline_keyboard][]=[['text'=>"رجوع",'callback_data'=>"Bj-$api"]];
+$key['inline_keyboard'][]=[['text'=>"$t",'callback_data'=>"iQ-$app-$add-$api-2"],['text'=>"$s",'callback_data'=>"iQ-$app-$add-$api-1"]];
+$key['inline_keyboard'][]=[['text'=>"رجوع",'callback_data'=>"Bj-$api"]];
 $keyboad      = json_encode($key);
 bot('EditMessageText',[
 'chat_id'=>$chat_id,
@@ -2382,8 +2382,8 @@ if($app=="ot"){
 $app="NO";
 }
 }
-if($con == 1) { $continent     = $_co[country18];  }
-if($con == 2) { $continent     = $_co[country18_2];  }
+if($con == 1) { $continent     = $_co['country18'];  }
+if($con == 2) { $continent     = $_co['country18_2'];  }
 if($app == 'NO'){
 bot('answercallbackquery',[
 'callback_query_id'=>$update->callback_query->id,
@@ -2407,11 +2407,11 @@ $key     = [];
 foreach ($continent as $zero=>$ar){
 $API=str_replace(["Vi"],["mm.duraincloud.com.com"],$api);
 $e++;
-$key[inline_keyboard][$i][]=[text=>"$ar",callback_data=>"addprice-$app-$add-$api-$zero-any"];
+$key['inline_keyboard'][$i][]=['text'=>"$ar",'callback_data'=>"addprice-$app-$add-$api-$zero-any"];
 if($e%3 == 0) $i++;
 }
-$key[inline_keyboard][]=[['text'=>"$t",'callback_data'=>"iR-$app-$add-$api-2"],['text'=>"$s",'callback_data'=>"iR-$app-$add-$api-1"]];
-$key[inline_keyboard][]=[['text'=>"رجوع",'callback_data'=>"Bj-$api"]];
+$key['inline_keyboard'][]=[['text'=>"$t",'callback_data'=>"iR-$app-$add-$api-2"],['text'=>"$s",'callback_data'=>"iR-$app-$add-$api-1"]];
+$key['inline_keyboard'][]=[['text'=>"رجوع",'callback_data'=>"Bj-$api"]];
 $keyboad      = json_encode($key);
 bot('EditMessageText',[
 'chat_id'=>$chat_id,
@@ -2480,12 +2480,12 @@ $key     = [];
 foreach ($continent as $ar=>$zero){
 $API = str_replace(["Ai","Bi","Ci","Di","Hi","Ji","Li","Mi","Ni","Si"],["5sim.biz","tempnum.org","sms-man.ru","Vak-sms.com","onlinesim.io","supersmstech.com","simsms.org","grizzlysms.com","sms-code.ru","dropsms.ru"],$api);
 $e++;
-$key[inline_keyboard][$i][]=[text=>"$ar",callback_data=>"allservice-$app-$add-$api-$zero"];
+$key['inline_keyboard'][$i][]=['text'=>"$ar",'callback_data'=>"allservice-$app-$add-$api-$zero"];
 if($e%3 == 0) $i++;
 }
 $key['inline_keyboard'][0] = [['text'=>'☑️ - جميع الدول في الأسفل ⬇️','callback_data'=>"no"]];
 $key['inline_keyboard'][] = [['text'=>"$t",'callback_data'=>"iV-$app-$add-$api-$o"],['text'=>"$s",'callback_data'=>"iV-$app-$add-$api-$u"],['text'=>"$v",'callback_data'=>"iV-$app-$add-$api-8"],['text'=>"$n",'callback_data'=>"iV-$app-$add-$api-1"]];
-$key[inline_keyboard][]=[['text'=>"رجوع",'callback_data'=>"Bj-$api"]];
+$key['inline_keyboard'][]=[['text'=>"رجوع",'callback_data'=>"Bj-$api"]];
 $keyboad      = json_encode($key);
 bot('EditMessageText',[
 'chat_id'=>$chat_id,
@@ -4290,9 +4290,9 @@ $opt = "any";
 $api_key = $APPS[$site][api_key];
 $operator=1;
 $api_price=json_decode(file_get_contents("https://".$_SERVER['SERVER_NAME']."/$bot/api-sites.php?action=getPrice&site=$site&country=$country&app=$app&operator=$operator"),1);
-$status=$api_price[status];
-$price=$api_price[price];
-$adds=$api_price[add];
+$status=$api_price['status'];
+$price=$api_price['price'];
+$adds=$api_price['add'];
 if($api_key != null and $adds >= 5 and $price > 0 and $addblusdel['tempnum']['add'] == "ok"){
 $rupl=$addblusdel[$site]['rupl'];
 $price=$rupl+$price;
@@ -4327,9 +4327,9 @@ $opt = "any";
 $api_key = $APPS[$site][api_key];
 $operator=2;
 $api_price=json_decode(file_get_contents("https://".$_SERVER['SERVER_NAME']."/$bot/api-sites.php?action=getPrice&site=$site&country=$country&app=$app&operator=$operator"),1);
-$status=$api_price[status];
-$price=$api_price[price];
-$adds=$api_price[add];
+$status=$api_price['status'];
+$price=$api_price['price'];
+$adds=$api_price['add'];
 if($api_key != null and $adds >= 10 and $price > 0 and $addblusdel['man']['add'] == "ok"){
 $rupl=$addblusdel[$site]['rupl'];
 $price=$rupl+$price;
@@ -4365,9 +4365,9 @@ $opt = "any";
 $api_key = $APPS[$site][api_key];
 $operator=3;
 $api_price=json_decode(file_get_contents("https://".$_SERVER['SERVER_NAME']."/$bot/api-sites.php?action=getPrice&site=$site&country=$country&app=$app&operator=$operator"),1);
-$status=$api_price[status];
-$price=$api_price[price];
-$adds=$api_price[add];
+$status=$api_price['status'];
+$price=$api_price['price'];
+$adds=$api_price['add'];
 if($api_key != null and $adds >= 10 and $price > 0 and $o_co['country3'][$country] != null and $addblusdel['vak']['add'] == "ok"){
 $rupl=$addblusdel[$site]['rupl'];
 $price=$rupl+$price;
@@ -4402,9 +4402,9 @@ $opt = "any";
 $api_key = $APPS[$site][api_key];
 $operator=6;
 $api_price=json_decode(file_get_contents("https://".$_SERVER['SERVER_NAME']."/$bot/api-sites.php?action=getPrice&site=$site&country=$country&app=$app&operator=$operator"),1);
-$status=$api_price[status];
-$price=$api_price[price];
-$adds=$api_price[add];
+$status=$api_price['status'];
+$price=$api_price['price'];
+$adds=$api_price['add'];
 if($api_key != null and $adds >= 10 and $price > 0 and $o_co['country6'][$country] != null and $addblusdel['onlinesim']['add'] == "ok"){
 $price=$price*$Exchange;
 $rupl=$addblusdel[$site]['rupl'];
@@ -4440,9 +4440,9 @@ $opt = "1";
 $api_key = $APPS[$site][api_key];
 $operator=48;
 $api_price=json_decode(file_get_contents("https://".$_SERVER['SERVER_NAME']."/$bot/api-sites.php?action=getPrice&site=$site&country=$country&app=$app&operator=$operator"),1);
-$status=$api_price[status];
-$price=$api_price[price];
-$adds=$api_price[add];
+$status=$api_price['status'];
+$price=$api_price['price'];
+$adds=$api_price['add'];
 if($api_key != null and $price > 0 and $o_co['country7'][$country] != null and $addblusdel['supersmstech']['add'] == "ok"){
 $rupl=$addblusdel[$site]['rupl'];
 $price=$rupl+$price;
@@ -4477,9 +4477,9 @@ $opt = "3";
 $api_key = $APPS[$site][api_key];
 $operator=49;
 $api_price=json_decode(file_get_contents("https://".$_SERVER['SERVER_NAME']."/$bot/api-sites.php?action=getPrice&site=$site&country=$country&app=$app&operator=$operator"),1);
-$status=$api_price[status];
-$price=$api_price[price];
-$adds=$api_price[add];
+$status=$api_price['status'];
+$price=$api_price['price'];
+$adds=$api_price['add'];
 if($api_key != null and $price > 0 and $o_co['country7'][$country] != null and $addblusdel['supersmstech']['add'] == "ok"){
 $rupl=$addblusdel[$site]['rupl'];
 $price=$rupl+$price;
@@ -4514,9 +4514,9 @@ $opt = "4";
 $api_key = $APPS[$site][api_key];
 $operator=50;
 $api_price=json_decode(file_get_contents("https://".$_SERVER['SERVER_NAME']."/$bot/api-sites.php?action=getPrice&site=$site&country=$country&app=$app&operator=$operator"),1);
-$status=$api_price[status];
-$price=$api_price[price];
-$adds=$api_price[add];
+$status=$api_price['status'];
+$price=$api_price['price'];
+$adds=$api_price['add'];
 if($api_key != null and $price > 0 and $o_co['country7'][$country] != null and $addblusdel['supersmstech']['add'] == "ok"){
 $rupl=$addblusdel[$site]['rupl'];
 $price=$rupl+$price;
@@ -4551,9 +4551,9 @@ $opt = "5";
 $api_key = $APPS[$site][api_key];
 $operator=51;
 $api_price=json_decode(file_get_contents("https://".$_SERVER['SERVER_NAME']."/$bot/api-sites.php?action=getPrice&site=$site&country=$country&app=$app&operator=$operator"),1);
-$status=$api_price[status];
-$price=$api_price[price];
-$adds=$api_price[add];
+$status=$api_price['status'];
+$price=$api_price['price'];
+$adds=$api_price['add'];
 if($api_key != null and $price > 0 and $o_co['country7'][$country] != null and $addblusdel['supersmstech']['add'] == "ok"){
 $rupl=$addblusdel[$site]['rupl'];
 $price=$rupl+$price;
@@ -4588,9 +4588,9 @@ $opt = "7";
 $api_key = $APPS[$site][api_key];
 $operator=52;
 $api_price=json_decode(file_get_contents("https://".$_SERVER['SERVER_NAME']."/$bot/api-sites.php?action=getPrice&site=$site&country=$country&app=$app&operator=$operator"),1);
-$status=$api_price[status];
-$price=$api_price[price];
-$adds=$api_price[add];
+$status=$api_price['status'];
+$price=$api_price['price'];
+$adds=$api_price['add'];
 if($api_key != null and $price > 0 and $o_co['country7'][$country] != null and $addblusdel['supersmstech']['add'] == "ok"){
 $rupl=$addblusdel[$site]['rupl'];
 $price=$rupl+$price;
@@ -4625,9 +4625,9 @@ $opt = "any";
 $api_key = $APPS[$site][api_key];
 $operator=7;
 $api_price=json_decode(file_get_contents("https://".$_SERVER['SERVER_NAME']."/$bot/api-sites.php?action=getPrice&site=$site&country=$country&app=$app&operator=$operator"),1);
-$status=$api_price[status];
-$price=$api_price[price];
-$adds=$api_price[add];
+$status=$api_price['status'];
+$price=$api_price['price'];
+$adds=$api_price['add'];
 if($api_key != null and $price > 0 and $o_co['country9'][$country] != null and $addblusdel['simsms']['add'] == "ok"){
 $rupl=$addblusdel[$site]['rupl'];
 $price=$rupl+$price;
@@ -4662,9 +4662,9 @@ $opt = "any";
 $api_key = $APPS[$site][api_key];
 $operator=8;
 $api_price=json_decode(file_get_contents("https://".$_SERVER['SERVER_NAME']."/$bot/api-sites.php?action=getPrice&site=$site&country=$country&app=$app&operator=$operator"),1);
-$status=$api_price[status];
-$price=$api_price[price];
-$adds=$api_price[add];
+$status=$api_price['status'];
+$price=$api_price['price'];
+$adds=$api_price['add'];
 if($api_key != null and $price > 0 and $o_co['country10'][$country] != null and $addblusdel['grizzly']['add'] == "ok"){
 $rupl=$addblusdel[$site]['rupl'];
 $price=$rupl+$price;
@@ -4699,9 +4699,9 @@ $opt = "any";
 $api_key = $APPS[$site][api_key];
 $operator=9;
 $api_price=json_decode(file_get_contents("https://".$_SERVER['SERVER_NAME']."/$bot/api-sites.php?action=getPrice&site=$site&country=$country&app=$app&operator=$operator"),1);
-$status=$api_price[status];
-$price=$api_price[price];
-$adds=$api_price[add];
+$status=$api_price['status'];
+$price=$api_price['price'];
+$adds=$api_price['add'];
 if($api_key != null and $price > 0 and $o_co['country11'][$country] != null and $addblusdel['smscode']['add'] == "ok"){
 $rupl=$addblusdel[$site]['rupl'];
 $price=$rupl+$price;
@@ -4736,9 +4736,9 @@ $opt = "any";
 $api_key = $APPS[$site][api_key];
 $operator=10;
 $api_price=json_decode(file_get_contents("https://".$_SERVER['SERVER_NAME']."/$bot/api-sites.php?action=getPrice&site=$site&country=$country&app=$app&operator=$operator"),1);
-$status=$api_price[status];
-$price=$api_price[price];
-$adds=$api_price[add];
+$status=$api_price['status'];
+$price=$api_price['price'];
+$adds=$api_price['add'];
 $nams=$_co['country12'][$country];
 if($nams == null){
 $nams = $_co['country12_2'][$country];
@@ -4778,8 +4778,8 @@ $opt = "any";
 $api_key = $APPS[$site][api_key];
 $operator=12;
 $api_price=json_decode(file_get_contents("https://".$_SERVER['SERVER_NAME']."/$bot/api-sites.php?action=getPrice&site=$site&country=$country&app=$app&operator=$operator"),1);
-$status=$api_price[status];
-$price=$api_price[price];
+$status=$api_price['status'];
+$price=$api_price['price'];
 if($api_key != null and $price > 0 and $addblusdel['dropsms']['add'] == "ok"){
 $rupl=$addblusdel[$site]['rupl'];
 $price=$rupl+$price;
@@ -4810,9 +4810,9 @@ $api_key = $APPS[$site][api_key];
 $zx = $o_co['country17'][$country];
 $operator=13;
 $api_price=json_decode(file_get_contents("https://".$_SERVER['SERVER_NAME']."/$bot/api-sites.php?action=getPrice&site=$site&country=$country&app=$app&operator=$operator"),1);
-$status=$api_price[status];
-$price=$api_price[price];
-$adds=$api_price[add];
+$status=$api_price['status'];
+$price=$api_price['price'];
+$adds=$api_price['add'];
 if($api_key != null and $adds >= 5 and $price > 0 and $o_co['country17'][$country] != null and $addblusdel['24sms7']['add'] == "ok"){
 $price=$price*$Exchange;
 $rupl=$addblusdel[$site]['rupl'];
@@ -4883,43 +4883,43 @@ $status = $add;
 $APP = str_replace(["A","B","C","D","E","F","G","H","I","J","K","L","M","N","21","22","23","24","25","26","27","28","29","30","31","32","33","34","35","36","37","38","39","40"],["واتسأب","واتسأب","تيليجرام","فيسبوك","إنستقرام","تويتر","تيك توك","قوقل","ايمو","فايبر","سناب شات","نيتفلكس","حراج","السيرفر العام","عشوائي واتسأب","عشوائي واتسأب","عشوائي واتسأب","عشوائي واتسأب","عشوائي واتسأب","عشوائي تيليجرام","عشوائي تيليجرام","عشوائي تيليجرام","عشوائي تيليجرام","عشوائي تيليجرام","واتسأب المميز","واتسأب المميز","واتسأب المميز","واتسأب المميز","واتسأب المميز","تيليجرام المميز","تيليجرام المميز","تيليجرام المميز","تيليجرام المميز","تيليجرام المميز"],$status);
 $name = $_co['country'][$country];
 if($api == "Gi"){
-$key[inline_keyboard][]=[['text'=>"any",'callback_data'=>"addprice-$app-$add-$api-$country-any"]];
-$key[inline_keyboard][]=[['text'=>"mobifone",'callback_data'=>"addprice-$app-$add-$api-$country-mobifone"]];
-$key[inline_keyboard][]=[['text'=>"vietnamobile",'callback_data'=>"addprice-$app-$add-$api-$country-vietnamobile"]];
-$key[inline_keyboard][]=[['text'=>"viettel",'callback_data'=>"addprice-$app-$add-$api-$country-viettel"]];
-$key[inline_keyboard][]=[['text'=>"vinaphone",'callback_data'=>"addprice-$app-$add-$api-$country-vinaphone"]];
+$key['inline_keyboard'][]=[['text'=>"any",'callback_data'=>"addprice-$app-$add-$api-$country-any"]];
+$key['inline_keyboard'][]=[['text'=>"mobifone",'callback_data'=>"addprice-$app-$add-$api-$country-mobifone"]];
+$key['inline_keyboard'][]=[['text'=>"vietnamobile",'callback_data'=>"addprice-$app-$add-$api-$country-vietnamobile"]];
+$key['inline_keyboard'][]=[['text'=>"viettel",'callback_data'=>"addprice-$app-$add-$api-$country-viettel"]];
+$key['inline_keyboard'][]=[['text'=>"vinaphone",'callback_data'=>"addprice-$app-$add-$api-$country-vinaphone"]];
 }elseif($api == "Ki"){
-$key[inline_keyboard][]=[['text'=>"MOBIFONE",'callback_data'=>"addprice-$app-$add-$api-$country-MOBIFONE"]];
-$key[inline_keyboard][]=[['text'=>"VINAPHONE",'callback_data'=>"addprice-$app-$add-$api-$country-VINAPHONE"]];
-$key[inline_keyboard][]=[['text'=>"VIETTEL",'callback_data'=>"addprice-$app-$add-$api-$country-VIETTEL"]];
-$key[inline_keyboard][]=[['text'=>"VIETNAMOBILE",'callback_data'=>"addprice-$app-$add-$api-$country-VIETNAMOBILE"]];
-$key[inline_keyboard][]=[['text'=>"ITELECOM",'callback_data'=>"addprice-$app-$add-$api-$country-ITELECOM"]];
+$key['inline_keyboard'][]=[['text'=>"MOBIFONE",'callback_data'=>"addprice-$app-$add-$api-$country-MOBIFONE"]];
+$key['inline_keyboard'][]=[['text'=>"VINAPHONE",'callback_data'=>"addprice-$app-$add-$api-$country-VINAPHONE"]];
+$key['inline_keyboard'][]=[['text'=>"VIETTEL",'callback_data'=>"addprice-$app-$add-$api-$country-VIETTEL"]];
+$key['inline_keyboard'][]=[['text'=>"VIETNAMOBILE",'callback_data'=>"addprice-$app-$add-$api-$country-VIETNAMOBILE"]];
+$key['inline_keyboard'][]=[['text'=>"ITELECOM",'callback_data'=>"addprice-$app-$add-$api-$country-ITELECOM"]];
 }elseif($api == "Pi"){
-$key[inline_keyboard][]=[['text'=>"Operator",'callback_data'=>"addprice-$app-$add-$api-$country-0"]];
-$key[inline_keyboard][]=[['text'=>"Viettel Group",'callback_data'=>"addprice-$app-$add-$api-$country-1"]];
-$key[inline_keyboard][]=[['text'=>"MobiFone",'callback_data'=>"addprice-$app-$add-$api-$country-2"]];
-$key[inline_keyboard][]=[['text'=>"VinaPhone",'callback_data'=>"addprice-$app-$add-$api-$country-3"]];
-$key[inline_keyboard][]=[['text'=>"Vietnamobile",'callback_data'=>"addprice-$app-$add-$api-$country-4"]];
-$key[inline_keyboard][]=[['text'=>"Itelecom",'callback_data'=>"addprice-$app-$add-$api-$country-5"]];
-$key[inline_keyboard][]=[['text'=>"Three",'callback_data'=>"addprice-$app-$add-$api-$country-6"]];
-$key[inline_keyboard][]=[['text'=>"Indosat Ooredoo",'callback_data'=>"addprice-$app-$add-$api-$country-8"]];
-$key[inline_keyboard][]=[['text'=>"Telkomsel",'callback_data'=>"addprice-$app-$add-$api-$country-9"]];
-$key[inline_keyboard][]=[['text'=>"Axis",'callback_data'=>"addprice-$app-$add-$api-$country-10"]];
-$key[inline_keyboard][]=[['text'=>"Lebara",'callback_data'=>"addprice-$app-$add-$api-$country-11"]];
-$key[inline_keyboard][]=[['text'=>"Vodafone Group",'callback_data'=>"addprice-$app-$add-$api-$country-12"]];
-$key[inline_keyboard][]=[['text'=>"Smart Telecom",'callback_data'=>"addprice-$app-$add-$api-$country-13"]];
-$key[inline_keyboard][]=[['text'=>"DTAC",'callback_data'=>"addprice-$app-$add-$api-$country-14"]];
-$key[inline_keyboard][]=[['text'=>"TrueMove H",'callback_data'=>"addprice-$app-$add-$api-$country-15"]];
-$key[inline_keyboard][]=[['text'=>"ETL Lao",'callback_data'=>"addprice-$app-$add-$api-$country-16"]];
-$key[inline_keyboard][]=[['text'=>"Lao Tel",'callback_data'=>"addprice-$app-$add-$api-$country-17"]];
+$key['inline_keyboard'][]=[['text'=>"Operator",'callback_data'=>"addprice-$app-$add-$api-$country-0"]];
+$key['inline_keyboard'][]=[['text'=>"Viettel Group",'callback_data'=>"addprice-$app-$add-$api-$country-1"]];
+$key['inline_keyboard'][]=[['text'=>"MobiFone",'callback_data'=>"addprice-$app-$add-$api-$country-2"]];
+$key['inline_keyboard'][]=[['text'=>"VinaPhone",'callback_data'=>"addprice-$app-$add-$api-$country-3"]];
+$key['inline_keyboard'][]=[['text'=>"Vietnamobile",'callback_data'=>"addprice-$app-$add-$api-$country-4"]];
+$key['inline_keyboard'][]=[['text'=>"Itelecom",'callback_data'=>"addprice-$app-$add-$api-$country-5"]];
+$key['inline_keyboard'][]=[['text'=>"Three",'callback_data'=>"addprice-$app-$add-$api-$country-6"]];
+$key['inline_keyboard'][]=[['text'=>"Indosat Ooredoo",'callback_data'=>"addprice-$app-$add-$api-$country-8"]];
+$key['inline_keyboard'][]=[['text'=>"Telkomsel",'callback_data'=>"addprice-$app-$add-$api-$country-9"]];
+$key['inline_keyboard'][]=[['text'=>"Axis",'callback_data'=>"addprice-$app-$add-$api-$country-10"]];
+$key['inline_keyboard'][]=[['text'=>"Lebara",'callback_data'=>"addprice-$app-$add-$api-$country-11"]];
+$key['inline_keyboard'][]=[['text'=>"Vodafone Group",'callback_data'=>"addprice-$app-$add-$api-$country-12"]];
+$key['inline_keyboard'][]=[['text'=>"Smart Telecom",'callback_data'=>"addprice-$app-$add-$api-$country-13"]];
+$key['inline_keyboard'][]=[['text'=>"DTAC",'callback_data'=>"addprice-$app-$add-$api-$country-14"]];
+$key['inline_keyboard'][]=[['text'=>"TrueMove H",'callback_data'=>"addprice-$app-$add-$api-$country-15"]];
+$key['inline_keyboard'][]=[['text'=>"ETL Lao",'callback_data'=>"addprice-$app-$add-$api-$country-16"]];
+$key['inline_keyboard'][]=[['text'=>"Lao Tel",'callback_data'=>"addprice-$app-$add-$api-$country-17"]];
 }elseif($api == "Ui"){
-$key[inline_keyboard][]=[['text'=>"MOBIFONE",'callback_data'=>"addprice-$app-$add-$api-$country-MOBIFONE"]];
-$key[inline_keyboard][]=[['text'=>"VINAPHONE",'callback_data'=>"addprice-$app-$add-$api-$country-VINAPHONE"]];
-$key[inline_keyboard][]=[['text'=>"VIETTEL",'callback_data'=>"addprice-$app-$add-$api-$country-VIETTEL"]];
-$key[inline_keyboard][]=[['text'=>"VIETNAMOBILE",'callback_data'=>"addprice-$app-$add-$api-$country-VIETNAMOBILE"]];
-$key[inline_keyboard][]=[['text'=>"ITELECOM",'callback_data'=>"addprice-$app-$add-$api-$country-ITELECOM"]];
+$key['inline_keyboard'][]=[['text'=>"MOBIFONE",'callback_data'=>"addprice-$app-$add-$api-$country-MOBIFONE"]];
+$key['inline_keyboard'][]=[['text'=>"VINAPHONE",'callback_data'=>"addprice-$app-$add-$api-$country-VINAPHONE"]];
+$key['inline_keyboard'][]=[['text'=>"VIETTEL",'callback_data'=>"addprice-$app-$add-$api-$country-VIETTEL"]];
+$key['inline_keyboard'][]=[['text'=>"VIETNAMOBILE",'callback_data'=>"addprice-$app-$add-$api-$country-VIETNAMOBILE"]];
+$key['inline_keyboard'][]=[['text'=>"ITELECOM",'callback_data'=>"addprice-$app-$add-$api-$country-ITELECOM"]];
 }
-$key[inline_keyboard][]=[['text'=>'رجوع','callback_data'=>"iE-$app-$add-$api"]];
+$key['inline_keyboard'][]=[['text'=>'رجوع','callback_data'=>"iE-$app-$add-$api"]];
 $keyboad      = json_encode($key);
 bot('EditMessageText',[
 'chat_id'=>$chat_id,
@@ -5008,70 +5008,70 @@ $status = $add;
 $APP = str_replace(["A","B","C","D","E","F","G","H","I","J","K","L","M","N","21","22","23","24","25","26","27","28","29","30","31","32","33","34","35","36","37","38","39","40"],["واتسأب","واتسأب","تيليجرام","فيسبوك","إنستقرام","تويتر","تيك توك","قوقل","ايمو","فايبر","سناب شات","نيتفلكس","حراج","السيرفر العام","عشوائي واتسأب","عشوائي واتسأب","عشوائي واتسأب","عشوائي واتسأب","عشوائي واتسأب","عشوائي تيليجرام","عشوائي تيليجرام","عشوائي تيليجرام","عشوائي تيليجرام","عشوائي تيليجرام","واتسأب المميز","واتسأب المميز","واتسأب المميز","واتسأب المميز","واتسأب المميز","تيليجرام المميز","تيليجرام المميز","تيليجرام المميز","تيليجرام المميز","تيليجرام المميز"],$status);
 $name = $_co['country'][$country];
 if($app == "wa"){
-$key[inline_keyboard][]=[['text'=>"Whatsapp-C6",'callback_data'=>"addprice-$app-$add-$api-$country-3819"]];
-$key[inline_keyboard][]=[['text'=>"Whatsapp-C3",'callback_data'=>"addprice-$app-$add-$api-$country-3543"]];
+$key['inline_keyboard'][]=[['text'=>"Whatsapp-C6",'callback_data'=>"addprice-$app-$add-$api-$country-3819"]];
+$key['inline_keyboard'][]=[['text'=>"Whatsapp-C3",'callback_data'=>"addprice-$app-$add-$api-$country-3543"]];
 }
 if($app == "tg"){
-$key[inline_keyboard][]=[['text'=>"Telegram Login-C2",'callback_data'=>"addprice-$app-$add-$api-$country-3528"]];
-$key[inline_keyboard][]=[['text'=>"Telegram-C3",'callback_data'=>"addprice-$app-$add-$api-$country-3328"]];
-$key[inline_keyboard][]=[['text'=>"Telegram-C2",'callback_data'=>"addprice-$app-$add-$api-$country-2001"]];
+$key['inline_keyboard'][]=[['text'=>"Telegram Login-C2",'callback_data'=>"addprice-$app-$add-$api-$country-3528"]];
+$key['inline_keyboard'][]=[['text'=>"Telegram-C3",'callback_data'=>"addprice-$app-$add-$api-$country-3328"]];
+$key['inline_keyboard'][]=[['text'=>"Telegram-C2",'callback_data'=>"addprice-$app-$add-$api-$country-2001"]];
 }
 if($app == "fb"){
-$key[inline_keyboard][]=[['text'=>"facebook-C6",'callback_data'=>"addprice-$app-$add-$api-$country-3825"]];
-$key[inline_keyboard][]=[['text'=>"Facebook Reg-C2",'callback_data'=>"addprice-$app-$add-$api-$country-3521"]];
-$key[inline_keyboard][]=[['text'=>"Facebook-C3",'callback_data'=>"addprice-$app-$add-$api-$country-3326"]];
-$key[inline_keyboard][]=[['text'=>"Facebook1-C3",'callback_data'=>"addprice-$app-$add-$api-$country-2940"]];
-$key[inline_keyboard][]=[['text'=>"Facebook新-C3",'callback_data'=>"addprice-$app-$add-$api-$country-2919"]];
+$key['inline_keyboard'][]=[['text'=>"facebook-C6",'callback_data'=>"addprice-$app-$add-$api-$country-3825"]];
+$key['inline_keyboard'][]=[['text'=>"Facebook Reg-C2",'callback_data'=>"addprice-$app-$add-$api-$country-3521"]];
+$key['inline_keyboard'][]=[['text'=>"Facebook-C3",'callback_data'=>"addprice-$app-$add-$api-$country-3326"]];
+$key['inline_keyboard'][]=[['text'=>"Facebook1-C3",'callback_data'=>"addprice-$app-$add-$api-$country-2940"]];
+$key['inline_keyboard'][]=[['text'=>"Facebook新-C3",'callback_data'=>"addprice-$app-$add-$api-$country-2919"]];
 }
 if($app == "gi"){
-$key[inline_keyboard][]=[['text'=>"Instagram-C6",'callback_data'=>"addprice-$app-$add-$api-$country-3832"]];
-$key[inline_keyboard][]=[['text'=>"Instagram Reg-C4",'callback_data'=>"addprice-$app-$add-$api-$country-3744"]];
-$key[inline_keyboard][]=[['text'=>"Instagram Reg-C2",'callback_data'=>"addprice-$app-$add-$api-$country-3375"]];
-$key[inline_keyboard][]=[['text'=>"Instagram-C3",'callback_data'=>"addprice-$app-$add-$api-$country-3262"]];
-$key[inline_keyboard][]=[['text'=>"Instagram-C3",'callback_data'=>"addprice-$app-$add-$api-$country-3128"]];
+$key['inline_keyboard'][]=[['text'=>"Instagram-C6",'callback_data'=>"addprice-$app-$add-$api-$country-3832"]];
+$key['inline_keyboard'][]=[['text'=>"Instagram Reg-C4",'callback_data'=>"addprice-$app-$add-$api-$country-3744"]];
+$key['inline_keyboard'][]=[['text'=>"Instagram Reg-C2",'callback_data'=>"addprice-$app-$add-$api-$country-3375"]];
+$key['inline_keyboard'][]=[['text'=>"Instagram-C3",'callback_data'=>"addprice-$app-$add-$api-$country-3262"]];
+$key['inline_keyboard'][]=[['text'=>"Instagram-C3",'callback_data'=>"addprice-$app-$add-$api-$country-3128"]];
 }
 if($app == "tw"){
-$key[inline_keyboard][]=[['text'=>"Twitter-C6",'callback_data'=>"addprice-$app-$add-$api-$country-3826"]];
-$key[inline_keyboard][]=[['text'=>"Twitter Reg-C4",'callback_data'=>"addprice-$app-$add-$api-$country-3749"]];
-$key[inline_keyboard][]=[['text'=>"Twitter Login-C2",'callback_data'=>"addprice-$app-$add-$api-$country-3484"]];
-$key[inline_keyboard][]=[['text'=>"Twitter-C3",'callback_data'=>"addprice-$app-$add-$api-$country-3333"]];
-$key[inline_keyboard][]=[['text'=>"Twitter -C3",'callback_data'=>"addprice-$app-$add-$api-$country-3302"]];
-$key[inline_keyboard][]=[['text'=>"Twitter-C2",'callback_data'=>"addprice-$app-$add-$api-$country-2003"]];
+$key['inline_keyboard'][]=[['text'=>"Twitter-C6",'callback_data'=>"addprice-$app-$add-$api-$country-3826"]];
+$key['inline_keyboard'][]=[['text'=>"Twitter Reg-C4",'callback_data'=>"addprice-$app-$add-$api-$country-3749"]];
+$key['inline_keyboard'][]=[['text'=>"Twitter Login-C2",'callback_data'=>"addprice-$app-$add-$api-$country-3484"]];
+$key['inline_keyboard'][]=[['text'=>"Twitter-C3",'callback_data'=>"addprice-$app-$add-$api-$country-3333"]];
+$key['inline_keyboard'][]=[['text'=>"Twitter -C3",'callback_data'=>"addprice-$app-$add-$api-$country-3302"]];
+$key['inline_keyboard'][]=[['text'=>"Twitter-C2",'callback_data'=>"addprice-$app-$add-$api-$country-2003"]];
 }
 if($app == "lf"){
-$key[inline_keyboard][]=[['text'=>"Tiktok-C2",'callback_data'=>"addprice-$app-$add-$api-$country-3475"]];
+$key['inline_keyboard'][]=[['text'=>"Tiktok-C2",'callback_data'=>"addprice-$app-$add-$api-$country-3475"]];
 }
 if($app == "go"){
-$key[inline_keyboard][]=[['text'=>"Gmail/Google Reg-C2",'callback_data'=>"addprice-$app-$add-$api-$country-3391"]];
-$key[inline_keyboard][]=[['text'=>"Google/Gmail-C3",'callback_data'=>"addprice-$app-$add-$api-$country-3335"]];
-$key[inline_keyboard][]=[['text'=>"Google Pay-C3",'callback_data'=>"addprice-$app-$add-$api-$country-2012"]];
+$key['inline_keyboard'][]=[['text'=>"Gmail/Google Reg-C2",'callback_data'=>"addprice-$app-$add-$api-$country-3391"]];
+$key['inline_keyboard'][]=[['text'=>"Google/Gmail-C3",'callback_data'=>"addprice-$app-$add-$api-$country-3335"]];
+$key['inline_keyboard'][]=[['text'=>"Google Pay-C3",'callback_data'=>"addprice-$app-$add-$api-$country-2012"]];
 }
 if($app == "im"){
-$key[inline_keyboard][]=[['text'=>"Imo-C6",'callback_data'=>"addprice-$app-$add-$api-$country-3862"]];
-$key[inline_keyboard][]=[['text'=>"Imo-C2",'callback_data'=>"addprice-$app-$add-$api-$country-3385"]];
-$key[inline_keyboard][]=[['text'=>"Imo-C3",'callback_data'=>"addprice-$app-$add-$api-$country-2624"]];
+$key['inline_keyboard'][]=[['text'=>"Imo-C6",'callback_data'=>"addprice-$app-$add-$api-$country-3862"]];
+$key['inline_keyboard'][]=[['text'=>"Imo-C2",'callback_data'=>"addprice-$app-$add-$api-$country-3385"]];
+$key['inline_keyboard'][]=[['text'=>"Imo-C3",'callback_data'=>"addprice-$app-$add-$api-$country-2624"]];
 }
 if($app == "vi"){
-$key[inline_keyboard][]=[['text'=>"Viber-C6",'callback_data'=>"addprice-$app-$add-$api-$country-3820"]];
-$key[inline_keyboard][]=[['text'=>"Viber Reg-C2",'callback_data'=>"addprice-$app-$add-$api-$country-3497"]];
-$key[inline_keyboard][]=[['text'=>"Viber-C3",'callback_data'=>"addprice-$app-$add-$api-$country-3312"]];
+$key['inline_keyboard'][]=[['text'=>"Viber-C6",'callback_data'=>"addprice-$app-$add-$api-$country-3820"]];
+$key['inline_keyboard'][]=[['text'=>"Viber Reg-C2",'callback_data'=>"addprice-$app-$add-$api-$country-3497"]];
+$key['inline_keyboard'][]=[['text'=>"Viber-C3",'callback_data'=>"addprice-$app-$add-$api-$country-3312"]];
 }
 if($app == "fu"){
-$key[inline_keyboard][]=[['text'=>"Snapchat-C6",'callback_data'=>"addprice-$app-$add-$api-$country-3890"]];
-$key[inline_keyboard][]=[['text'=>"Snapchat Reg-C2",'callback_data'=>"addprice-$app-$add-$api-$country-3392"]];
-$key[inline_keyboard][]=[['text'=>"Snapchat-C3",'callback_data'=>"addprice-$app-$add-$api-$country-2866"]];
+$key['inline_keyboard'][]=[['text'=>"Snapchat-C6",'callback_data'=>"addprice-$app-$add-$api-$country-3890"]];
+$key['inline_keyboard'][]=[['text'=>"Snapchat Reg-C2",'callback_data'=>"addprice-$app-$add-$api-$country-3392"]];
+$key['inline_keyboard'][]=[['text'=>"Snapchat-C3",'callback_data'=>"addprice-$app-$add-$api-$country-2866"]];
 }
 if($app == "nf"){
-$key[inline_keyboard][]=[['text'=>"Netflix-C6",'callback_data'=>"addprice-$app-$add-$api-$country-3858"]];
-$key[inline_keyboard][]=[['text'=>"Netflix Reg-C2",'callback_data'=>"addprice-$app-$add-$api-$country-3515"]];
-$key[inline_keyboard][]=[['text'=>"Netflix-C3",'callback_data'=>"addprice-$app-$add-$api-$country-3191"]];
-$key[inline_keyboard][]=[['text'=>"Netflix-C3",'callback_data'=>"addprice-$app-$add-$api-$country-3189"]];
+$key['inline_keyboard'][]=[['text'=>"Netflix-C6",'callback_data'=>"addprice-$app-$add-$api-$country-3858"]];
+$key['inline_keyboard'][]=[['text'=>"Netflix Reg-C2",'callback_data'=>"addprice-$app-$add-$api-$country-3515"]];
+$key['inline_keyboard'][]=[['text'=>"Netflix-C3",'callback_data'=>"addprice-$app-$add-$api-$country-3191"]];
+$key['inline_keyboard'][]=[['text'=>"Netflix-C3",'callback_data'=>"addprice-$app-$add-$api-$country-3189"]];
 }
 if($app == "au"){
-$key[inline_keyboard][]=[['text'=>"Haraj-C6",'callback_data'=>"addprice-$app-$add-$api-$country-3999"]];
-$key[inline_keyboard][]=[['text'=>"Haraj-C3",'callback_data'=>"addprice-$app-$add-$api-$country-2929"]];
+$key['inline_keyboard'][]=[['text'=>"Haraj-C6",'callback_data'=>"addprice-$app-$add-$api-$country-3999"]];
+$key['inline_keyboard'][]=[['text'=>"Haraj-C3",'callback_data'=>"addprice-$app-$add-$api-$country-2929"]];
 }
-$key[inline_keyboard][]=[['text'=>"رجوع",'callback_data'=>"iO-$app-$add-$api"]];
+$key['inline_keyboard'][]=[['text'=>"رجوع",'callback_data'=>"iO-$app-$add-$api"]];
 $keyboad      = json_encode($key);
 bot('EditMessageText',[
 'chat_id'=>$chat_id,
@@ -5755,9 +5755,9 @@ $status = $add;
 $APP = str_replace(["A","B","C","D","E","F","G","H","I","J","K","L","M","N","21","22","23","24","25","26","27","28","29","30","31","32","33","34","35","36","37","38","39","40"],["واتسأب","واتسأب","تيليجرام","فيسبوك","إنستقرام","تويتر","تيك توك","قوقل","ايمو","فايبر","سناب شات","نيتفلكس","حراج","السيرفر العام","عشوائي واتسأب","عشوائي واتسأب","عشوائي واتسأب","عشوائي واتسأب","عشوائي واتسأب","عشوائي تيليجرام","عشوائي تيليجرام","عشوائي تيليجرام","عشوائي تيليجرام","عشوائي تيليجرام","واتسأب المميز","واتسأب المميز","واتسأب المميز","واتسأب المميز","واتسأب المميز","تيليجرام المميز","تيليجرام المميز","تيليجرام المميز","تيليجرام المميز","تيليجرام المميز"],$status);
 $name = $_co['country'][$country];
 $api_price=json_decode(file_get_contents("https://".$_SERVER['SERVER_NAME']."/$bot/api-sites.php?action=getPrice&site=$site&country=$country&app=$app&operator=$operator"),1);
-$status=$api_price[status];
+$status=$api_price['status'];
 if($status=="200"){
-$price=$api_price[price];
+$price=$api_price['price'];
 }elseif($status=="0"){
 $price = "❌";
 }
@@ -5804,32 +5804,32 @@ bot('EditMessageText',[
 ]);
 unlink("zzz.json");
 unlink("data/id/$id/step.txt");
-$zzz[mode][$chat_id]="addprice";
-$zzz[api]=$api;
-$zzz[add]=$add;
-$zzz[app]=$app;
-$zzz[country]=$country;
-$zzz[site]=$site;
-$zzz[API]=$API;
-$zzz[operator]=$operator;
+$zzz['mode'][$chat_id]="addprice";
+$zzz['api']=$api;
+$zzz['add']=$add;
+$zzz['app']=$app;
+$zzz['country']=$country;
+$zzz['site']=$site;
+$zzz['API']=$API;
+$zzz['operator']=$operator;
 zzz();
 }
 }
-if($text != '/start' && $text && $zzz[mode][$chat_id]=="addprice"){
+if($text != '/start' && $text && $zzz['mode'][$chat_id]=="addprice"){
 if($text>0){
-$app=$zzz[app];
-$add=$zzz[add];
-$api=$zzz[api];
-$country=$zzz[country];
-$site=$zzz[site];
-$API=$zzz[API];
+$app=$zzz['app'];
+$add=$zzz['add'];
+$api=$zzz['api'];
+$country=$zzz['country'];
+$site=$zzz['site'];
+$API=$zzz['API'];
 $exn=explode(".", $text);
 if($exn[1] > 0){
 $price="$text"."0";
 }else{
 $price="$exn[0].00";
 }
-$operator=$zzz[operator];
+$operator=$zzz['operator'];
 if($add >=1 and $add <=14){
 $status = str_replace(["10","11","12","13","14","1","2","3","4","5","6","7","8","9"],["J","K","L","M","N","A","B","C","D","E","F","G","H","I"],$add);
 }else{
@@ -6096,7 +6096,7 @@ if($oop >= 15){
 break;
 }
 $country = $num['country'];
-if(15 < count($buy[country_app]["$add-$country"])){
+if(15 < count($buy['country_app']["$add-$country"])){
 $to="⬅️ التالي ⬅️";
 }
 $i = $random[$add]['idd'][$zero];
@@ -6165,7 +6165,7 @@ $key     = [];
 $key['inline_keyboard'][] = [['text'=>'🖌','callback_data'=>'no'],['text'=>'🌐 الموقع','callback_data'=>'no'],['text'=>'☑️ الدولة','callback_data'=>'no'],['text'=>'💰 السعر','callback_data'=>'no'],['text'=>'🖌','callback_data'=>'no']];
 foreach($buy['number'] as $zero=>$num){
 $country = $num['country'];
-if($jj > count($buy[country_app]["$add-$country"])){
+if($jj > count($buy['country_app']["$add-$country"])){
 bot('answercallbackquery',[
 'callback_query_id'=>$update->callback_query->id,
 'text'=>"
@@ -6185,7 +6185,7 @@ if($oop >= $fj){
 if($oop > 15){
 $ba="➡️ السابق ➡️";
 }
-if($jk < count($buy[country_app]["$add-$country"])){
+if($jk < count($buy['country_app']["$add-$country"])){
 $to="⬅️ التالي ⬅️";
 }
 $i = $random[$add]['idd'][$zero];
@@ -6285,7 +6285,7 @@ if($oop >= 15){
 break;
 }
 $country = $num['country'];
-if(15 < count($buy[country_app]["$add-$country"])){
+if(15 < count($buy['country_app']["$add-$country"])){
 $to="⬅️ التالي ⬅️";
 }
 $price=$num['price'];
@@ -6352,7 +6352,7 @@ $key     = [];
 $key['inline_keyboard'][] = [['text'=>'🌐 الموقع','callback_data'=>'no'],['text'=>'☑️ الدولة','callback_data'=>'no'],['text'=>'💰 السعر','callback_data'=>'no']];
 foreach($buy['number'] as $zero=>$num){
 $country = $num['country'];
-if($jj > count($buy[country_app]["$add-$country"])){
+if($jj > count($buy['country_app']["$add-$country"])){
 bot('answercallbackquery',[
 'callback_query_id'=>$update->callback_query->id,
 'text'=>"
@@ -6372,7 +6372,7 @@ if($oop >= $fj){
 if($oop > 15){
 $ba="➡️ السابق ➡️";
 }
-if($jk < count($buy[country_app]["$add-$country"])){
+if($jk < count($buy['country_app']["$add-$country"])){
 $to="⬅️ التالي ⬅️";
 }
 $price=$num['price'];
@@ -6521,13 +6521,13 @@ $country = $buy['number'][$zero]['country'];
 $site = $buy['number'][$zero]['site'];
 $operator = $buy['number'][$zero]['operator'];
 $api_price=json_decode(file_get_contents("https://".$_SERVER['SERVER_NAME']."/$bot/api-sites.php?action=getPrice&site=$site&country=$country&app=$app&operator=$operator"),1);
-$status=$api_price[status];
+$status=$api_price['status'];
 if($status=="200"){
-$price=$api_price[price];
+$price=$api_price['price'];
 }elseif($status=="0"){
 $price = "❌";
 }
-$operator=$api_price[operator];
+$operator=$api_price['operator'];
 bot('answercallbackquery',[
 'callback_query_id'=>$update->callback_query->id,
 'text'=>"
@@ -6861,7 +6861,7 @@ bot('sendMessage',[
 ]
 ])
 ]);
-$APPS[tempnum][api_key] = $text;
+$APPS['tempnum'][api_key] = $text;
 Apps($APPS);
 }
 #=========={sms-man.ru}==========#
@@ -6895,7 +6895,7 @@ bot('sendMessage',[
 ]
 ])
 ]);
-$APPS[man][api_key] = $text;
+$APPS['man'][api_key] = $text;
 Apps($APPS);
 }
 #=========={Vak-sms.com}==========#
@@ -6929,7 +6929,7 @@ bot('sendMessage',[
 ]
 ])
 ]);
-$APPS[vak][api_key] = $text;
+$APPS['vak'][api_key] = $text;
 Apps($APPS);
 }
 #=========={sms-acktiwator.ru}==========#
@@ -6963,7 +6963,7 @@ bot('sendMessage',[
 ]
 ])
 ]);
-$APPS[acktiwator][api_key] = $text;
+$APPS['acktiwator'][api_key] = $text;
 Apps($APPS);
 }
 #=========={pvapins.com}==========#
@@ -6997,7 +6997,7 @@ bot('sendMessage',[
 ]
 ])
 ]);
-$APPS[pvapins][api_key] = $text;
+$APPS['pvapins'][api_key] = $text;
 Apps($APPS);
 }
 #=========={sms3t.com}==========#
@@ -7031,7 +7031,7 @@ bot('sendMessage',[
 ]
 ])
 ]);
-$APPS[sms3t][api_key] = $text;
+$APPS['sms3t'][api_key] = $text;
 Apps($APPS);
 }
 #=========={onlinesim.io}==========#
@@ -7065,7 +7065,7 @@ bot('sendMessage',[
 ]
 ])
 ]);
-$APPS[onlinesim][api_key] = $text;
+$APPS['onlinesim'][api_key] = $text;
 Apps($APPS);
 }
 #=========={supersmstech.com}==========#
@@ -7099,7 +7099,7 @@ bot('sendMessage',[
 ]
 ])
 ]);
-$APPS[supersmstech][api_key] = $text;
+$APPS['supersmstech'][api_key] = $text;
 Apps($APPS);
 }
 #=========={viotp.com}==========#
@@ -7133,7 +7133,7 @@ bot('sendMessage',[
 ]
 ])
 ]);
-$APPS[viotp][api_key] = $text;
+$APPS['viotp'][api_key] = $text;
 Apps($APPS);
 }
 #=========={simsms.org}==========#
@@ -7167,7 +7167,7 @@ bot('sendMessage',[
 ]
 ])
 ]);
-$APPS[simsms][api_key] = $text;
+$APPS['simsms'][api_key] = $text;
 Apps($APPS);
 }
 #=========={grizzlysms.com}==========#
@@ -7201,7 +7201,7 @@ bot('sendMessage',[
 ]
 ])
 ]);
-$APPS[grizzly][api_key] = $text;
+$APPS['grizzly'][api_key] = $text;
 Apps($APPS);
 }
 #=========={sms-code.ru}==========#
@@ -7235,7 +7235,7 @@ bot('sendMessage',[
 ]
 ])
 ]);
-$APPS[smscode][api_key] = $text;
+$APPS['smscode'][api_key] = $text;
 Apps($APPS);
 }
 #=========={tiger-sms.com}==========#
@@ -7269,7 +7269,7 @@ bot('sendMessage',[
 ]
 ])
 ]);
-$APPS[tiger][api_key] = $text;
+$APPS['tiger'][api_key] = $text;
 Apps($APPS);
 }
 #=========={2ndline.io}==========#
@@ -7337,7 +7337,7 @@ bot('sendMessage',[
 ]
 ])
 ]);
-$APPS[store][api_key] = $text;
+$APPS['store'][api_key] = $text;
 Apps($APPS);
 }
 #=========={sms.fastpva.com}==========#
@@ -7371,7 +7371,7 @@ bot('sendMessage',[
 ]
 ])
 ]);
-$APPS[fastpva][api_key] = $text;
+$APPS['fastpva'][api_key] = $text;
 Apps($APPS);
 }
 #=========={dropsms.ru}==========#
@@ -7405,7 +7405,7 @@ bot('sendMessage',[
 ]
 ])
 ]);
-$APPS[dropsms][api_key] = $text;
+$APPS['dropsms'][api_key] = $text;
 Apps($APPS);
 }
 #=========={24sms7.com}==========#
@@ -7473,7 +7473,7 @@ bot('sendMessage',[
 ]
 ])
 ]);
-$APPS[sellotp][api_key] = $text;
+$APPS['sellotp'][api_key] = $text;
 Apps($APPS);
 }
 #=========={mm.duraincloud.com}==========#
@@ -7511,9 +7511,9 @@ bot('sendMessage',[
 ]
 ])
 ]);
-$APPS[duraincloud][Username] = $extext[0];
-$APPS[duraincloud][Password] = $extext[1];
-$APPS[duraincloud][api_key] = $extext[2];
+$APPS['duraincloud'][Username] = $extext[0];
+$APPS['duraincloud'][Password] = $extext[1];
+$APPS['duraincloud'][api_key] = $extext[2];
 Apps($APPS);
 }
 #=========={حذف API}==========#
@@ -7612,7 +7612,7 @@ bot('EditMessageText',[
 ]
 ])
 ]);
-unset($APPS[tempnum]);
+unset($APPS['tempnum']);
 Apps($APPS);
 }
 #=========={sms-man.ru}==========#
@@ -7646,7 +7646,7 @@ bot('EditMessageText',[
 ]
 ])
 ]);
-unset($APPS[man]);
+unset($APPS['man']);
 Apps($APPS);
 }
 #=========={Vak-sms.com}==========#
@@ -7680,7 +7680,7 @@ bot('EditMessageText',[
 ]
 ])
 ]);
-unset($APPS[vaksms]);
+unset($APPS['vaksms']);
 Apps($APPS);
 }
 #=========={sms-acktiwator.ru}==========#
@@ -7714,7 +7714,7 @@ bot('EditMessageText',[
 ]
 ])
 ]);
-unset($APPS[acktiwator]);
+unset($APPS['acktiwator']);
 Apps($APPS);
 }
 #=========={pvapins.com}==========#
@@ -7748,7 +7748,7 @@ bot('EditMessageText',[
 ]
 ])
 ]);
-unset($APPS[pvapins]);
+unset($APPS['pvapins']);
 Apps($APPS);
 }
 #=========={sms3t.com}==========#
@@ -7782,7 +7782,7 @@ bot('EditMessageText',[
 ]
 ])
 ]);
-unset($APPS[sms3t]);
+unset($APPS['sms3t']);
 Apps($APPS);
 }
 #=========={onlinesim.io}==========#
@@ -7816,7 +7816,7 @@ bot('EditMessageText',[
 ]
 ])
 ]);
-unset($APPS[onlinesim]);
+unset($APPS['onlinesim']);
 Apps($APPS);
 }
 #=========={supersmstech.com}==========#
@@ -7850,7 +7850,7 @@ bot('EditMessageText',[
 ]
 ])
 ]);
-unset($APPS[supersmstech]);
+unset($APPS['supersmstech']);
 Apps($APPS);
 }
 #=========={viotp.com}==========#
@@ -7884,7 +7884,7 @@ bot('EditMessageText',[
 ]
 ])
 ]);
-unset($APPS[viotp]);
+unset($APPS['viotp']);
 Apps($APPS);
 }
 #=========={simsms.org}==========#
@@ -7918,7 +7918,7 @@ bot('EditMessageText',[
 ]
 ])
 ]);
-unset($APPS[simsms]);
+unset($APPS['simsms']);
 Apps($APPS);
 }
 #=========={grizzlysms.com}==========#
@@ -7952,7 +7952,7 @@ bot('EditMessageText',[
 ]
 ])
 ]);
-unset($APPS[grizzly]);
+unset($APPS['grizzly']);
 Apps($APPS);
 }
 #=========={sms-code.ru}==========#
@@ -7987,7 +7987,7 @@ bot('EditMessageText',[
 ]
 ])
 ]);
-unset($APPS[smscode]);
+unset($APPS['smscode']);
 Apps($APPS);
 }
 #=========={tiger-sms.com}==========#
@@ -8022,7 +8022,7 @@ bot('EditMessageText',[
 ]
 ])
 ]);
-unset($APPS[tiger]);
+unset($APPS['tiger']);
 Apps($APPS);
 }
 #=========={2ndline.io}==========#
@@ -8090,7 +8090,7 @@ bot('EditMessageText',[
 ]
 ])
 ]);
-unset($APPS[store]);
+unset($APPS['store']);
 Apps($APPS);
 }
 #=========={sms.fastpva.com}==========#
@@ -8124,7 +8124,7 @@ bot('EditMessageText',[
 ]
 ])
 ]);
-unset($APPS[fastpva]);
+unset($APPS['fastpva']);
 Apps($APPS);
 }
 #=========={dropsms.ru}==========#
@@ -8158,7 +8158,7 @@ bot('EditMessageText',[
 ]
 ])
 ]);
-unset($APPS[dropsms]);
+unset($APPS['dropsms']);
 Apps($APPS);
 }
 #=========={24sms7.com}==========#
@@ -8226,7 +8226,7 @@ bot('EditMessageText',[
 ]
 ])
 ]);
-unset($APPS[sellotp]);
+unset($APPS['sellotp']);
 Apps($APPS);
 }
 #=========={mm.duraincloud.com}==========#
@@ -8260,7 +8260,7 @@ bot('EditMessageText',[
 ]
 ])
 ]);
-unset($APPS[duraincloud]);
+unset($APPS['duraincloud']);
 Apps($APPS);
 }
 #=========={صنع كروت}==========#
@@ -8320,7 +8320,7 @@ $sool['card'][$CARD]['id'] = $id;
 $sool['card'][$CARD]['idcard'] = $cardbot2;
 $sool['card'][$CARD]['DAY'] = $DAY;
 Sool($sool);
-$ORDERALL[card] +=1;
+$ORDERALL['card'] +=1;
 OrdAll($ORDERALL);
 }else{
 bot('sendmessage',[
@@ -8428,7 +8428,7 @@ Ready($storenumber);
 if($data == 'delreadynumber'){
 if(count($storenumber['ready']) >= 1){
 $keyboad['inline_keyboard'][] = [['text'=>'الدولة ☑️','callback_data'=>'no'],['text'=>'الرقم ☎️','callback_data'=>'no']];
-foreach($storenumber['ready'] as $zero => $name){
+foreach($storenumber['ready'] as $zero=> $name){
 $country = $name['country'];
 $number = $name['number'];
 $keyboad['inline_keyboard'][] = [['text'=>"$country",'callback_data'=>"ahg#$zero"],['text'=>"$number",'callback_data'=>"ahg#$zero"]];
@@ -8572,7 +8572,7 @@ $BUYSPRIC[$idd][user_emil] = $EM;
 $BUYSPRIC[$idd][user_name] = $first;
 $BUYSPRIC[$idd][DAY] = $DAY;
 PricBuys($BUYSPRIC,$emile);
-$ORDERALL[add] +=1;
+$ORDERALL['add'] +=1;
 OrdAll($ORDERALL);
 unlink("data/id/$id/step.txt");
 }
@@ -8650,7 +8650,7 @@ $BUYSPRIC[$idd][user_emil] = $EM;
 $BUYSPRIC[$idd][user_name] = $first;
 $BUYSPRIC[$idd][DAY] = $DAY;
 PricBuys($BUYSPRIC,$emile);
-$ORDERALL[add] +=1;
+$ORDERALL['add'] +=1;
 OrdAll($ORDERALL);
 unlink("data/id/$id/step.txt");
 }
@@ -9146,8 +9146,8 @@ if (curl_errno($ch)) {
 }
 curl_close($ch);
 $api=json_decode($result,1);
-$price = $api[balance];
-$email = $api[email];
+$price = $api['balance'];
+$email = $api['email'];
 if($email != null){
 $tax="💬 - الإيميل : $email";
 }
@@ -9178,15 +9178,15 @@ $price = $api[1];
 }
 if($price == null){
 $api = json_decode(file_get_contents("https://onlinesim.io/api/getBalance.php?apikey=$text"),1);
-$price = $api[balance];
+$price = $api['balance'];
 }
 if($price == null){
 $api = json_decode(file_get_contents("https://api.viotp.com/users/balance?token=$text"),1);
-$price = $api[data][balance];
+$price = $api['data'][balance];
 }
 if($price == null){
 $api = json_decode(file_get_contents("http://simsms.org/priemnik.php?metod=get_balance&apikey=$text"),1);
-$price = $api[balance];
+$price = $api['balance'];
 }
 if($price == null){
 $api = file_get_contents("https://api.grizzlysms.com/stubs/handler_api.php?api_key=$text&action=getBalance");
@@ -9195,7 +9195,7 @@ $price = $api[1];
 }
 if($price == null){
 $api = json_decode(file_get_contents("https://sms-code.ru/api.php?api_key=$text&method=get_balance"),1);
-$price = $api[data][balance];
+$price = $api['data'][balance];
 }
 if($price == null){
 $api = file_get_contents("https://tiger-sms.com/stubs/handler_api.php?api_key=$text&action=getBalance");
@@ -9204,7 +9204,7 @@ $price = $api[1];
 }
 if($price == null){
 $api = json_decode(file_get_contents("https://2ndline.io/apiv1/getbalance?apikey=$text"),1);
-$price = $api[balance];
+$price = $api['balance'];
 }
 if($price == null){
 $api = file_get_contents("https://receivesms.store/stubs/handler_api.php?api_key=$text&action=getBalance");
@@ -9213,8 +9213,8 @@ $price = $api[1];
 }
 if($price == null){
 $api = json_decode(file_get_contents("http://api.fastpva.com/pvapublic/user/info?apikey=$text"),1);
-$price = $api[data][balance];
-$email = $api[data][email];
+$price = $api['data'][balance];
+$email = $api['data'][email];
 if($email != null){
 $tax="💬 - الإيميل : $email";
 }
@@ -9231,7 +9231,7 @@ $price = $api[1];
 }
 if($price == null){
 $api = json_decode(file_get_contents("https://api.sellotp.com/users/balance?token=$text&lang=en"),1);
-$price = $api[data][balance];
+$price = $api['data'][balance];
 }
 if($price == null){
 bot('sendMessage',[
@@ -9727,72 +9727,72 @@ if (curl_errno($ch)) {
 }
 curl_close($ch);
 $api=json_decode($result,1);
-$price = $api[balance];
+$price = $api['balance'];
 $price = "$price ₽";
-$key[inline_keyboard][]=[['text'=>"</> 5sim.biz",'callback_data'=>"Balapi-5sim"],['text'=>"$price",'url'=>"5sim.biz/payment"]];
+$key['inline_keyboard'][]=[['text'=>"</> 5sim.biz",'callback_data'=>"Balapi-5sim"],['text'=>"$price",'url'=>"5sim.biz/payment"]];
 }
 if($addblusdel['tempnum']['add'] == "ok"){
 $api_key = $APPS['tempnum'][api_key];
 $api = file_get_contents("https://tempnum.org/stubs/handler_api.php?api_key=$api_key&action=getBalance");
 $api = explode(":", $api);
 $price = "$api[1] ₽";
-$key[inline_keyboard][]=[['text'=>"</> tempnum.org",'callback_data'=>"Balapi-tempnum"],['text'=>"$price",'url'=>"null"]];
+$key['inline_keyboard'][]=[['text'=>"</> tempnum.org",'callback_data'=>"Balapi-tempnum"],['text'=>"$price",'url'=>"null"]];
 }
 if($addblusdel['man']['add'] == "ok"){
 $api_key = $APPS['man'][api_key];
 $api = file_get_contents("http://api.sms-man.ru/stubs/handler_api.php?action=getBalance&api_key=$api_key");
 $api = explode(":", $api);
 $price = "$api[1] ₽";
-$key[inline_keyboard][]=[['text'=>"</> sms-man.ru",'callback_data'=>"Balapi-man"],['text'=>"$price",'url'=>"sms-man.ru"]];
+$key['inline_keyboard'][]=[['text'=>"</> sms-man.ru",'callback_data'=>"Balapi-man"],['text'=>"$price",'url'=>"sms-man.ru"]];
 }
 if($addblusdel['vak']['add'] == "ok"){
 $api_key = $APPS['vak'][api_key];
 $api = file_get_contents("https://vak-sms.com/stubs/handler_api.php?api_key=$api_key&action=getBalance");
 $api = explode(":", $api);
 $price = "$api[1] ₽";
-$key[inline_keyboard][]=[['text'=>"</> Vak-sms.com",'callback_data'=>"Balapi-vak"],['text'=>"$price",'url'=>"vak-sms.com/pay/"]];
+$key['inline_keyboard'][]=[['text'=>"</> Vak-sms.com",'callback_data'=>"Balapi-vak"],['text'=>"$price",'url'=>"vak-sms.com/pay/"]];
 }
 if($addblusdel['acktiwator']['add'] == "ok"){
 $api_key = $APPS['acktiwator'][api_key];
 $api = file_get_contents("https://sms-acktiwator.ru/stubs/handler_api.php?api_key=$api_key&action=getBalance");
 $api = explode(":", $api);
 $price = "$api[1] ₽";
-$key[inline_keyboard][]=[['text'=>"</> sms-acktiwator.ru",'callback_data'=>"Balapi-acktiwator"],['text'=>"$price",'url'=>"sms-acktiwator.ru/invoice/invoice"]];
+$key['inline_keyboard'][]=[['text'=>"</> sms-acktiwator.ru",'callback_data'=>"Balapi-acktiwator"],['text'=>"$price",'url'=>"sms-acktiwator.ru/invoice/invoice"]];
 }
 if($addblusdel['pvapins']['add'] == "ok"){
 $api_key = $APPS['pvapins'][api_key];
 $price = "غير معرف.";
-$key[inline_keyboard][]=[['text'=>"</> pvapins.com",'callback_data'=>"Balapi-pvapins"],['text'=>"$price",'url'=>"pvapins.com/user/ads_orders.php?page=add"]];
+$key['inline_keyboard'][]=[['text'=>"</> pvapins.com",'callback_data'=>"Balapi-pvapins"],['text'=>"$price",'url'=>"pvapins.com/user/ads_orders.php?page=add"]];
 }
 if($addblusdel['sms3t']['add'] == "ok"){
 $api_key = $APPS['sms3t'][api_key];
 $api = file_get_contents("http://vps.sms3t.com/stubs/handler_api.php?api_key=$api_key&action=getBalance");
 $api = explode(":", $api);
 $price = "$api[1] $";
-$key[inline_keyboard][]=[['text'=>"</> sms3t.com",'callback_data'=>"Balapi-sms3t"],['text'=>"$price",'url'=>"sms3t.com/money"]];
+$key['inline_keyboard'][]=[['text'=>"</> sms3t.com",'callback_data'=>"Balapi-sms3t"],['text'=>"$price",'url'=>"sms3t.com/money"]];
 }
 if($addblusdel['onlinesim']['add'] == "ok"){
 $api_key = $APPS['onlinesim'][api_key];
 $api = json_decode(file_get_contents("https://onlinesim.io/api/getBalance.php?apikey=$api_key"),1);
-$price = $api[balance];
+$price = $api['balance'];
 $price = "$price $";
-$key[inline_keyboard][]=[['text'=>"</> onlinesim.io",'callback_data'=>"Balapi-onlinesim"],['text'=>"$price",'url'=>"onlinesim.io/v2/payment/"]];
+$key['inline_keyboard'][]=[['text'=>"</> onlinesim.io",'callback_data'=>"Balapi-onlinesim"],['text'=>"$price",'url'=>"onlinesim.io/v2/payment/"]];
 }
 if($addblusdel['supersmstech']['add'] == "ok"){
 $api_key = $APPS['supersmstech'][api_key];
 $api = json_decode(file_get_contents("https://www.supersmstech.com/api/getbalance?secret_key=$api_key"),1);
-$price = $api[balance];
+$price = $api['balance'];
 $price = "$price ₽";
-$key[inline_keyboard][]=[['text'=>"</> supersmstech.com",'callback_data'=>"Balapi-supersmstech"],['text'=>"$price",'url'=>"www.thesupercomm.com/payment"]];
+$key['inline_keyboard'][]=[['text'=>"</> supersmstech.com",'callback_data'=>"Balapi-supersmstech"],['text'=>"$price",'url'=>"www.thesupercomm.com/payment"]];
 }
 if($addblusdel['viotp']['add'] == "ok"){
 $api_key = $APPS['viotp'][api_key];
 $api = json_decode(file_get_contents("https://api.viotp.com/users/balance?token=$api_key"),1);
-$price = $api[data][balance];
+$price = $api['data'][balance];
 $price = "$price ¥";
-$key[inline_keyboard][]=[['text'=>"</> viotp.com",'callback_data'=>"Balapi-viotp"],['text'=>"$price",'url'=>"viotp.com/Transaction/Deposit"]];
+$key['inline_keyboard'][]=[['text'=>"</> viotp.com",'callback_data'=>"Balapi-viotp"],['text'=>"$price",'url'=>"viotp.com/Transaction/Deposit"]];
 }
-$key[inline_keyboard][]=[['text'=>"رجوع",'callback_data'=>"cop"],['text'=>"التالي. ⬅️",'callback_data'=>"Balancesms2"]];
+$key['inline_keyboard'][]=[['text'=>"رجوع",'callback_data'=>"cop"],['text'=>"التالي. ⬅️",'callback_data'=>"Balancesms2"]];
 $keyboad      = json_encode($key);
 if($text == null){
 bot('EditMessageText',[
@@ -9820,89 +9820,89 @@ if($data == 'Balancesms2'){
 if($addblusdel['simsms']['add'] == "ok"){
 $api_key = $APPS['simsms'][api_key];
 $api = json_decode(file_get_contents("http://simsms.org/priemnik.php?metod=get_balance&apikey=$api_key"),1);
-$price = $api[balance];
+$price = $api['balance'];
 $price = "$price ₽";
-$key[inline_keyboard][]=[['text'=>"</> simsms.org",'callback_data'=>"Balapi-simsms"],['text'=>"$price",'url'=>"simsms.org/balance.html"]];
+$key['inline_keyboard'][]=[['text'=>"</> simsms.org",'callback_data'=>"Balapi-simsms"],['text'=>"$price",'url'=>"simsms.org/balance.html"]];
 }
 if($addblusdel['grizzly']['add'] == "ok"){
 $api_key = $APPS['grizzly'][api_key];
 $api = file_get_contents("https://api.grizzlysms.com/stubs/handler_api.php?api_key=$api_key&action=getBalance");
 $api = explode(":", $api);
 $price = $price = "$api[1] ₽";
-$key[inline_keyboard][]=[['text'=>"</> grizzlysms.com",'callback_data'=>"Balapi-grizzly"],['text'=>"$price",'url'=>"grizzlysms.com/profile/pay"]];
+$key['inline_keyboard'][]=[['text'=>"</> grizzlysms.com",'callback_data'=>"Balapi-grizzly"],['text'=>"$price",'url'=>"grizzlysms.com/profile/pay"]];
 }
 if($addblusdel['smscode']['add'] == "ok"){
 $api_key = $APPS['smscode'][api_key];
 $api = json_decode(file_get_contents("https://sms-code.ru/api.php?api_key=$api_key&method=get_balance"),1);
-$price = $api[data][balance];
+$price = $api['data'][balance];
 $price = "$price ₽";
-$key[inline_keyboard][]=[['text'=>"</> sms-code.ru",'callback_data'=>"Balapi-smscode"],['text'=>"$price",'url'=>"sms-code.ru/cabinet/payment"]];
+$key['inline_keyboard'][]=[['text'=>"</> sms-code.ru",'callback_data'=>"Balapi-smscode"],['text'=>"$price",'url'=>"sms-code.ru/cabinet/payment"]];
 }
 if($addblusdel['tiger']['add'] == "ok"){
 $api_key = $APPS['tiger'][api_key];
 $api = file_get_contents("https://tiger-sms.com/stubs/handler_api.php?api_key=$api_key&action=getBalance");
 $api = explode(":", $api);
 $price = "$api[1] $";
-$key[inline_keyboard][]=[['text'=>"</> tiger-sms.com",'callback_data'=>"Balapi-tiger"],['text'=>"$price",'url'=>"tiger-sms.com/cabinet/payment"]];
+$key['inline_keyboard'][]=[['text'=>"</> tiger-sms.com",'callback_data'=>"Balapi-tiger"],['text'=>"$price",'url'=>"tiger-sms.com/cabinet/payment"]];
 }
 if($addblusdel['2ndline']['add'] == "ok"){
 $api_key = $APPS['2ndline'][api_key];
 $api = json_decode(file_get_contents("https://2ndline.io/apiv1/getbalance?apikey=$api_key"),1);
-$price = $api[balance];
+$price = $api['balance'];
 $price = "$price $";
-$key[inline_keyboard][]=[['text'=>"</> 2ndline.io",'callback_data'=>"Balapi-2ndline"],['text'=>"$price",'url'=>"2ndline.io/recharge/chose"]];
+$key['inline_keyboard'][]=[['text'=>"</> 2ndline.io",'callback_data'=>"Balapi-2ndline"],['text'=>"$price",'url'=>"2ndline.io/recharge/chose"]];
 }
 if($addblusdel['store']['add'] == "ok"){
 $api_key = $APPS['store'][api_key];
 $api = file_get_contents("https://receivesms.store/stubs/handler_api.php?api_key=$api_key&action=getBalance");
 $api = explode(":", $api);
 $price = "$api[1] $";
-$key[inline_keyboard][]=[['text'=>"</> receivesms.store",'callback_data'=>"Balapi-store"],['text'=>"$price",'url'=>"t.me/adsvk"]];
+$key['inline_keyboard'][]=[['text'=>"</> receivesms.store",'callback_data'=>"Balapi-store"],['text'=>"$price",'url'=>"t.me/adsvk"]];
 }
 if($addblusdel['fastpva']['add'] == "ok"){
 $api_key = $APPS['fastpva'][api_key];
 $api = json_decode(file_get_contents("http://api.fastpva.com/pvapublic/user/info?apikey=$api_key"),1);
-$price = $api[data][balance];
+$price = $api['data'][balance];
 $price = "$price $";
-$key[inline_keyboard][]=[['text'=>"</> sms.fastpva.com",'callback_data'=>"Balapi-fastpva"],['text'=>"$price",'url'=>"sms.fastpva.com/#/profile/recharge"]];
+$key['inline_keyboard'][]=[['text'=>"</> sms.fastpva.com",'callback_data'=>"Balapi-fastpva"],['text'=>"$price",'url'=>"sms.fastpva.com/#/profile/recharge"]];
 }
 if($addblusdel['dropsms']['add'] == "ok"){
 $api_key = $APPS['dropsms'][api_key];
 $api = file_get_contents("https://api.dropsms.cc/stubs/handler_api.php?action=getBalance&api_key=$api_key");
 $api = explode(":", $api);
 $price = "$api[1] ₽";
-$key[inline_keyboard][]=[['text'=>"</> dropsms.ru",'callback_data'=>"Balapi-dropsms"],['text'=>"$price",'url'=>"t.me/dropsmsbot"]];
+$key['inline_keyboard'][]=[['text'=>"</> dropsms.ru",'callback_data'=>"Balapi-dropsms"],['text'=>"$price",'url'=>"t.me/dropsmsbot"]];
 }
 if($addblusdel['24sms7']['add'] == "ok"){
 $api_key = $APPS['24sms7'][api_key];
 $api = file_get_contents("https://24sms7.com/stubs/handler_api.php?api_key=$api_key&action=getBalance");
 $api = explode(":", $api);
 $price = "$api[1] ₽";
-$key[inline_keyboard][]=[['text'=>"</> 24sms7.com",'callback_data'=>"Balapi-24sms7"],['text'=>"$price",'url'=>"t.me/iPaiiia"]];
+$key['inline_keyboard'][]=[['text'=>"</> 24sms7.com",'callback_data'=>"Balapi-24sms7"],['text'=>"$price",'url'=>"t.me/iPaiiia"]];
 }
 if($addblusdel['sellotp']['add'] == "ok"){
 $api_key = $APPS['sellotp'][api_key];
 $api = json_decode(file_get_contents("https://api.sellotp.com/users/balance?token=$api_key&lang=en"),1);
-$price = $api[data][balance];
+$price = $api['data'][balance];
 $price = "$price ¥";
-$key[inline_keyboard][]=[['text'=>"</> sellotp.com",'callback_data'=>"Balapi-sellotp"],['text'=>"$price",'url'=>"home.sellotp.com/"]];
+$key['inline_keyboard'][]=[['text'=>"</> sellotp.com",'callback_data'=>"Balapi-sellotp"],['text'=>"$price",'url'=>"home.sellotp.com/"]];
 }
 if($addblusdel['sellotp']['add'] == "ok"){
 $api_key = $APPS['sellotp'][api_key];
 $api = json_decode(file_get_contents("https://api.sellotp.com/users/balance?token=$api_key&lang=en"),1);
-$price = $api[data][balance];
+$price = $api['data'][balance];
 $price = "$price ¥";
-$key[inline_keyboard][]=[['text'=>"</> sellotp.com",'callback_data'=>"Balapi-sellotp"],['text'=>"$price",'url'=>"home.sellotp.com/"]];
+$key['inline_keyboard'][]=[['text'=>"</> sellotp.com",'callback_data'=>"Balapi-sellotp"],['text'=>"$price",'url'=>"home.sellotp.com/"]];
 }
 if($addblusdel['sellotp']['add'] == "ok"){
 $api_key = $APPS['sellotp'][api_key];
 $api = json_decode(file_get_contents("https://api.sellotp.com/users/balance?token=$api_key&lang=en"),1);
-$price = $api[data][balance];
+$price = $api['data'][balance];
 $price = "$price ¥";
-$key[inline_keyboard][]=[['text'=>"</> sellotp.com",'callback_data'=>"Balapi-sellotp"],['text'=>"$price",'url'=>"home.sellotp.com/"]];
+$key['inline_keyboard'][]=[['text'=>"</> sellotp.com",'callback_data'=>"Balapi-sellotp"],['text'=>"$price",'url'=>"home.sellotp.com/"]];
 }
-$key[inline_keyboard][]=[['text'=>"➡️ السابق.",'callback_data'=>"Balancesms"],['text'=>"التالي. ⬅️",'callback_data'=>"Balancesms3"]];
-$key[inline_keyboard][]=[['text'=>"رجوع",'callback_data'=>"cop"]];
+$key['inline_keyboard'][]=[['text'=>"➡️ السابق.",'callback_data'=>"Balancesms"],['text'=>"التالي. ⬅️",'callback_data'=>"Balancesms3"]];
+$key['inline_keyboard'][]=[['text'=>"رجوع",'callback_data'=>"cop"]];
 $keyboad      = json_encode($key);
 bot('EditMessageText',[
 'chat_id'=>$chat_id,
@@ -9920,11 +9920,11 @@ $api_key = $APPS['duraincloud'][api_key];
 $Username = $APPS['duraincloud'][Username];
 $Password = $APPS['duraincloud'][Password];
 $api = json_decode(file_get_contents("https://api.duraincloud.com/out/ext_api/getUserInfo?name=$Username&pwd=$Password&ApiKey=$api_key"),1);
-$price = $api[data][score];
+$price = $api['data'][score];
 $price = "$price نقطة";
-$key[inline_keyboard][]=[['text'=>"</> mm.duraincloud.com",'callback_data'=>"Balapi-duraincloud"],['text'=>"$price",'url'=>"mm.duraincloud.com/"]];
+$key['inline_keyboard'][]=[['text'=>"</> mm.duraincloud.com",'callback_data'=>"Balapi-duraincloud"],['text'=>"$price",'url'=>"mm.duraincloud.com/"]];
 }
-$key[inline_keyboard][]=[['text'=>"➡️ السابق.",'callback_data'=>"Balancesms2"],['text'=>"رجوع",'callback_data'=>"cop"]];
+$key['inline_keyboard'][]=[['text'=>"➡️ السابق.",'callback_data'=>"Balancesms2"],['text'=>"رجوع",'callback_data'=>"cop"]];
 $keyboad      = json_encode($key);
 bot('EditMessageText',[
 'chat_id'=>$chat_id,
