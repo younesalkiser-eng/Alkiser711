@@ -11,6 +11,25 @@ if (!file_exists('assignment')) { mkdir('assignment', 0777, true); }
 if (!file_exists('data/id')) { mkdir('data/id', 0777, true); }
 if (!file_exists('data/txt')) { mkdir('data/txt', 0777, true); }
 if (!file_exists('data/api')) { mkdir('data/api', 0777, true); }
+// مصفوفة بجميع ملفات الـ json المفقودة لتجهيزها تلقائياً
+$required_files = [
+    'zzz.json', 'EMIL/emil.json', 'EMIL/emils.json', 'EMIL/emilnow.json', 
+    'BUY/Orderall.json', 'data/openlock.json', 'data/addblusdel.json', 
+    'data/txt/agent.json', 'data/country.json', 'data/txt/sool.json', 
+    'data/storenumber.json', 'data/id/admin.json', 'data/txt/random.json', 
+    'assignment/addem.json', 'assignment/addid.json', 'data/api/apps.json'
+];
+
+foreach ($required_files as $file) {
+    if (!file_exists($file)) {
+        file_put_contents($file, json_encode([])); // إنشاء ملف json فارغ
+    }
+}
+
+if (!file_exists('data/txt/file.txt')) {
+    file_put_contents('data/txt/file.txt', ''); // إنشاء ملف نصي فارغ
+}
+
 $API_KEY= '8585855339:AAFwTP2TrkhcowYndpfBJwtg6RXnWjunxeE';
 define('API_KEY',$API_KEY);
 echo file_get_contents("https://api.telegram.org/bot" . API_KEY . "/setwebhook?url=" . $_SERVER['SERVER_NAME'] . "" . $_SERVER['SCRIPT_NAME']);
@@ -30,6 +49,12 @@ if (isset($update)) {
     $chat_id = $message->chat->id;
     // ... باقي كود البوت بالكامل ينتهي هنا ...
 }
+$`update = json_decode(file_get_contents('php://input'));
+
+// شرط الأمان: لا تشغل بقية الكود إلا إذا جاء طلب حقيقي من تليجرام
+if (isset($update) && (!empty($update->message) || !empty(`$update->callback_query))) 
+{
+
 $message = $update->message;
 $chat_id = $message->chat->id;
 $text = $message->text;
@@ -4344,5 +4369,9 @@ bot("sendmessage",[
 'reply_to_message_id'=>$message_id,
 ]);
 }
+} else {
+// هذه الرسالة تظهر فقط لك عند فتح الرابط بالمتصفح لتأكيد تشغيل السيرفر
+echo "السيرفر يعمل بنجاح وبانتظار رسائل تليجرام!";
 }
+
     ?>
