@@ -3192,7 +3192,7 @@ $o_co['wa']['price16']['147'] = 20;
 $o_co['fb']['price16']['1'] = 1;
 $o_co['fb']['price16']['24'] = 1;
 $o_co['fb']['price16']['74'] = 1;
-$o_co['ig']['price16']['143'] = 1
+$o_co['ig']['price16']['143'] = 1;
 #
 #countries#24sms7
     $_co['country17']['0'] = "روسيا 🇷🇺";
