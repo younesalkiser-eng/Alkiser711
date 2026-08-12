@@ -231,7 +231,7 @@ $ordermy = (isset($BUYSNUM['number']) && is_array($BUYSNUM['number'])) ? count($
 // تعديل السطر الخاص بـ number_my وإضافة علامات التنصيص
 $numbuy = (isset($BUYSNUM['number_my'])) ? $BUYSNUM['number_my'] : 0; #عدد الأرقام المشترى#
 
-$readymy = $BUYSNUM[ready_my]; #عدد الأرقام الجاهزة#
+$readymy = $BUYSNUM['ready_my']; #عدد الأرقام الجاهزة#
 $orderall = count($ORDERALL)+1; #عدد مشتريات الاعضاء#
 $idnums = count($ORDERALL)+999999999; #عدد مشتريات الاعضاء#
 $cardmy = count($BUYSCARD); #عدد الكروت المشترى#
