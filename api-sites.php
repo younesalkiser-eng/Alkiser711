@@ -10,6 +10,45 @@ $smsnum=$_GET["smsnum"];
 $allsms=$_GET["allsms"];
 include("name.php");
 $APPS = json_decode(file_get_contents("data/api/apps.json"),true);
+
+// تكامل NumberPanel: يدعم استدعاء action=getNum أو action=requestNumber مع site=numberpanel
+if ($site === 'numberpanel' && in_array($_GET['action'] ?? '', ['getNum', 'requestNumber'], true)) {
+    $numberpanel_token = 'np_live_8rL4kJ2A0W0r_mXsGyHHW4hra75IrlQIsIz2yAnqECM';
+
+    $service = $app ?: 'WhatsApp';
+    $service = str_replace(['wa', 'whatsapp'], 'WhatsApp', strtolower($service));
+    $payload = json_encode([
+        'service' => $service,
+        'country' => $country ?: 'Indonesia'
+    ], JSON_UNESCAPED_UNICODE);
+
+    $ch = curl_init('https://numberpanel.tech/api/request_number');
+    curl_setopt_array($ch, [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_POST => true,
+        CURLOPT_POSTFIELDS => $payload,
+        CURLOPT_HTTPHEADER => [
+            'Authorization: Bearer ' . $numberpanel_token,
+            'Content-Type: application/json',
+            'Accept: application/json'
+        ],
+        CURLOPT_TIMEOUT => 30
+    ]);
+    $numberpanel_response = curl_exec($ch);
+    $numberpanel_error = curl_error($ch);
+    $numberpanel_http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+
+    if ($numberpanel_response === false) {
+        http_response_code(502);
+        echo json_encode(['ok' => false, 'error' => $numberpanel_error], JSON_UNESCAPED_UNICODE);
+    } else {
+        http_response_code($numberpanel_http_code ?: 200);
+        echo $numberpanel_response;
+    }
+    exit;
+}
+
 #________ALL
 $api_key = $APPS[$site][api_key];
 $Username = $APPS[$site][Username];
