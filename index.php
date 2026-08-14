@@ -17,7 +17,7 @@ $required_files = [
     'BUY/Orderall.json', 'data/openlock.json', 'data/addblusdel.json', 
     'data/txt/agent.json', 'data/country.json', 'data/txt/sool.json', 
     'data/storenumber.json', 'data/id/admin.json', 'data/txt/random.json', 
-    'assignment/addem.json', 'assignment/addid.json', 'data/api/apps.json'
+    'assignment/addem.json', 'assignment/addid.json', 'data/api/apps.json', 'data/txt/rubleall.txt', 'data/txt/pointall.txt'
 ];
 
 foreach ($required_files as $file) {
@@ -32,7 +32,10 @@ if (!file_exists('data/txt/file.txt')) {
 
 $API_KEY= '8585855339:AAFwTP2TrkhcowYndpfBJwtg6RXnWjunxeE';
 define('API_KEY',$API_KEY);
-echo file_get_contents("https://api.telegram.org/bot" . API_KEY . "/setwebhook?url=" . $_SERVER['SERVER_NAME'] . "" . $_SERVER['SCRIPT_NAME']);
+if (PHP_SAPI !== 'cli' && !empty($_SERVER['SERVER_NAME'])) {
+    $webhook_url = 'https://' . $_SERVER['SERVER_NAME'] . $_SERVER['SCRIPT_NAME'];
+    @file_get_contents("https://api.telegram.org/bot" . API_KEY . "/setwebhook?url=" . urlencode($webhook_url));
+}
 function bot($method,$datas=[]){
 $amrakl = http_build_query($datas);
 $url = "https://api.telegram.org/bot".API_KEY."/".$method."?$amrakl";
@@ -40,38 +43,34 @@ $amrakl = file_get_contents($url);
 return json_decode($amrakl);
 }
 $update = json_decode(file_get_contents('php://input'));
-$update = json_decode(file_get_contents('php://input'));
 
-// هذا الشرط يحمي الكود من المتصفح الخارجي
-if (isset($update)) {
-    // ضع هنا كل الكود الخاص بقراءة الرسائل (من سطر 25 فما فوق)
-    $message = $update->message;
-    $chat_id = $message->chat->id;
-    // ... باقي كود البوت بالكامل ينتهي هنا ...
+// لا تشغّل منطق البوت عند فتح الملف من المتصفح أو عند وصول طلب فارغ.
+if (!$update || (!isset($update->message) && !isset($update->callback_query))) {
+    exit;
 }
-$update = json_decode(file_get_contents('php://input'));
 
-// شرط الأمان: لا تشغل بقية الكود إلا إذا جاء طلب حقيقي من تليجرام
-if (isset($update) && (!empty($update->message) || !empty($update->callback_query))) 
-                                                     
-$message = $update->message;
-$chat_id = $message->chat->id;
-$text = $message->text;
-$message_id = $message->message_id;
-$id = $message->from->id;
-if($update->callback_query){
-$id                                   = $update->callback_query->message->chat->id;
-}else{
-$id           						= $update->message->chat->id;
+// Telegram يرسل message في الرسائل العادية وcallback_query في ضغطات الأزرار.
+$callback = $update->callback_query ?? null;
+$message = $update->message ?? ($callback->message ?? null);
+$from = $update->message->from ?? ($callback->from ?? null);
+if (!$message || !$from) {
+    exit;
 }
-$user = $message->from->username;
-$first = $message->from->first_name;
-if(isset($update->callback_query)){
-$chat_id = $update->callback_query->message->chat->id;
-$message_id = $update->callback_query->message->message_id;
-$data = $update->callback_query->data;
-$user = $update->callback_query->from->username;
-$first = $update->callback_query->from->first_name;
+
+$chat_id = $message->chat->id ?? ($from->id ?? null);
+$text = $message->text ?? null;
+$message_id = $message->message_id ?? null;
+$id = $from->id ?? $chat_id;
+$user = $from->username ?? null;
+$first = $from->first_name ?? '';
+$data = null;
+if ($callback) {
+    $chat_id = $callback->message->chat->id ?? $callback->from->id ?? null;
+    $message_id = $callback->message->message_id ?? null;
+    $data = $callback->data ?? null;
+    $user = $callback->from->username ?? null;
+    $first = $callback->from->first_name ?? '';
+    $id = $callback->from->id ?? $chat_id;
 }
 #=========={التخزينات}==========#
 function Aemil($array){
@@ -136,21 +135,25 @@ function zzz(){
 global $zzz;
 file_put_contents("zzz.json",json_encode($zzz));
 }
-$EMIL = json_decode(file_get_contents('EMIL/emil.json'),true);
-$EMILS = json_decode(file_get_contents('EMIL/emils.json'),true);
-$EMILNow = json_decode(file_get_contents('EMIL/emilnow.json'),true);
-$ORDERALL = json_decode(file_get_contents('BUY/Orderall.json'),true); #تخزين ايدي عمليات جميع الشراء
-$openandlock = json_decode(file_get_contents('data/openlock.json'),true);
-$addblusdel = json_decode(file_get_contents('data/addblusdel.json'),true);
-$agents = json_decode(file_get_contents('data/txt/agent.json'),true);
-$buy = json_decode(file_get_contents('data/country.json'),true);
-$sool = json_decode(file_get_contents('data/txt/sool.json'),true);
-$storenumber = json_decode(file_get_contents('data/storenumber.json'),true);
-$admins = json_decode(file_get_contents('data/id/admin.json'),true);
-$random = json_decode(file_get_contents('data/txt/random.json'),true);
-$assignment = json_decode(file_get_contents('assignment/addem.json'),true);
-$assignment2 = json_decode(file_get_contents('assignment/addid.json'),true);
-$APPS = json_decode(file_get_contents('data/api/apps.json'),true);
+$json_read = static function ($file) {
+    $value = json_decode((string)@file_get_contents($file), true);
+    return is_array($value) ? $value : [];
+};
+$EMIL = $json_read('EMIL/emil.json');
+$EMILS = $json_read('EMIL/emils.json');
+$EMILNow = $json_read('EMIL/emilnow.json');
+$ORDERALL = $json_read('BUY/Orderall.json'); # تخزين أيدي عمليات جميع الشراء
+$openandlock = $json_read('data/openlock.json');
+$addblusdel = $json_read('data/addblusdel.json');
+$agents = $json_read('data/txt/agent.json');
+$buy = $json_read('data/country.json');
+$sool = $json_read('data/txt/sool.json');
+$storenumber = $json_read('data/storenumber.json');
+$admins = $json_read('data/id/admin.json');
+$random = $json_read('data/txt/random.json');
+$assignment = $json_read('assignment/addem.json');
+$assignment2 = $json_read('assignment/addid.json');
+$APPS = $json_read('data/api/apps.json');
 
 // إنشاء حساب داخلي تلقائيًا وربطه مباشرةً بـ Telegram ID، دون تسجيل دخول يدوي.
 if (!isset($chat_id) || $chat_id === null) {
@@ -186,58 +189,68 @@ if($user != null){
 $User_link ="☑️ - رابط العضو ↖️";
 }
 #=========={حساب الإحصائيات}=========#
-$numbot = $ORDERALL['number']; #عدد الأرقام المكتملة#
-$readybot = $ORDERALL['ready']; #عدد الأرقام الجاهزة المشترى#
+$numbot = $ORDERALL['number'] ?? 0; # عدد الأرقام المكتملة
+$readybot = $ORDERALL['ready'] ?? 0; # عدد الأرقام الجاهزة المشترى
 $numbots=count($ORDERALL); #العدد الكلي لكمية الأرقام المستخرجة#
 $numbote = $numbots-$numbot; #عدد الأرقام المحضور#
 $buysall = $numbots; #العدد الكلي للأرقام المباعة#
 $Buybot = $numbot+$readybot; #العدد الكلي للأرقام المدفوعة#
-$cardbot = $ORDERALL['card']; #عدد الكروت المباعة#
-$sendbot = $ORDERALL['send']; #عدد عمليات التحويل#
-$money2 = file_get_contents("data/txt/rubleall.txt"); #الروبل اللكلي#
-$poi_money = file_get_contents("data/txt/pointall.txt"); #الروبل المتبقي#
-$money = $money2 - $poi_money; #الروبل المستهلك#
-$allcharges = $ORDERALL['add']; #عدد الشحن ب المرات#
+$cardbot = $ORDERALL['card'] ?? 0; # عدد الكروت المباعة
+$sendbot = $ORDERALL['send'] ?? 0; # عدد عمليات التحويل
+$money2 = (float)@file_get_contents("data/txt/rubleall.txt"); # الروبل الكلي
+$poi_money = (float)@file_get_contents("data/txt/pointall.txt"); # الروبل المتبقي
+$money = $money2 - $poi_money; # الروبل المستهلك
+$allcharges = $ORDERALL['add'] ?? 0; # عدد مرات الشحن
 $assignru=0.25; #نسبة ربح رابط الدعوة#
 $Exchange=60; #سعر الدولار#
 #________________
-$EM = $EMILNow['emil'][$chat_id];
-$passewo = $EMILNow['password'][$chat_id];
+$EM = $EMILNow['emil'][$chat_id] ?? null;
+$passewo = $EMILNow['password'][$chat_id] ?? null;
 if($EM==null){
-$EM=$EMIL[$chat_id]['emil'];
-$passewo = $EMIL[$chat_id]['pass'];
+$EM = $EMIL[$chat_id]['emil'] ?? null;
+$passewo = $EMIL[$chat_id]['pass'] ?? null;
 }
-$perrewo = $EMILS['emils'][$EM]['pass'];
+$perrewo = $EMILS['emils'][$EM]['pass'] ?? null;
 if(!is_dir("EMILS/$EM")){
-mkdir("EMILS/$EM");
+mkdir("EMILS/$EM", 0777, true);
 }
 if(!is_dir("data/id/$id")){
-mkdir("data/id/$id");
+mkdir("data/id/$id", 0777, true);
 }
-$BUYSNUM = json_decode(file_get_contents("EMILS/$EM/number.json"),true);
-$BUYSSEND = json_decode(file_get_contents("EMILS/$EM/send.json"),true);
-$BUYSCARD = json_decode(file_get_contents("EMILS/$EM/card.json"),true);
-$BUYSPRIC = json_decode(file_get_contents("EMILS/$EM/price.json"),true);
+foreach (['number.json'=>[], 'send.json'=>[], 'card.json'=>[], 'price.json'=>[], 'points.txt'=>'0', 'rubles.txt'=>'0'] as $account_file => $account_default) {
+    $account_path = "EMILS/$EM/$account_file";
+    if (!file_exists($account_path)) {
+        file_put_contents($account_path, str_ends_with($account_file, '.json') ? json_encode($account_default) : $account_default);
+    }
+}
+foreach (['restriction.txt'=>'', 'step.txt'=>'', 'twas.txt'=>'', 'number.txt'=>''] as $user_file => $user_default) {
+    $user_path = "data/id/$id/$user_file";
+    if (!file_exists($user_path)) { file_put_contents($user_path, $user_default); }
+}
+$BUYSNUM = $json_read("EMILS/$EM/number.json");
+$BUYSSEND = $json_read("EMILS/$EM/send.json");
+$BUYSCARD = $json_read("EMILS/$EM/card.json");
+$BUYSPRIC = $json_read("EMILS/$EM/price.json");
 #_________________
 $Detector = file_get_contents("data/id/$id/restriction.txt");
 $step = file_get_contents("data/id/$id/step.txt");
 $twas = file_get_contents("data/id/$id/twas.txt");
 $buynumber = file_get_contents("data/id/$id/number.txt");
-$exstep=explode("|", $step);
-$extext = explode("\n", $text);
-$ex_text=explode(" ", $text);
-$ex__text=explode("-", $text);
-$exdata=explode("-", $data);
-$ex_data=explode("#", $data);
-$ordermy = count($BUYSNUM[number]); #عدد الأرقام المشترى#
-$numbuy = $BUYSNUM[number_my]; #عدد الأرقام المشترى#
-$readymy = $BUYSNUM[ready_my]; #عدد الأرقام الجاهزة#
+$exstep=explode("|", (string)$step);
+$extext = explode("\n", (string)$text);
+$ex_text=explode(" ", (string)$text);
+$ex__text=explode("-", (string)$text);
+$exdata=explode("-", (string)$data);
+$ex_data=explode("#", (string)$data);
+$ordermy = count($BUYSNUM['number'] ?? []); # عدد الأرقام المشترى
+$numbuy = $BUYSNUM['number_my'] ?? 0; # عدد الأرقام المشترى
+$readymy = $BUYSNUM['ready_my'] ?? 0; # عدد الأرقام الجاهزة
 $orderall = count($ORDERALL)+1; #عدد مشتريات الاعضاء#
 $idnums = count($ORDERALL)+999999999; #عدد مشتريات الاعضاء#
 $cardmy = count($BUYSCARD); #عدد الكروت المشترى#
 $sendmy = count($BUYSSEND); #عدد عمليات تحويل الروبل#
 $pricmy = count($BUYSPRIC); #عدد عمليات شحن الحساب#
-$buymy = $BUYSNUM['number_my']; #عدد الأرقام المكتملة#
+$buymy = $BUYSNUM['number_my'] ?? 0; # عدد الأرقام المكتملة
 $rubles=file_get_contents("EMILS/$EM/rubles.txt"); #الرصيد اللكلي#
 $Balance = file_get_contents("EMILS/$EM/points.txt"); #رصيد العضو#
 $consumers = $rubles-$Balance; #عدد الروبل المستهلك#
@@ -613,21 +626,21 @@ exit;
 #=========={الحماية}==========#
 if($Detector != null){
 if($exdata[0] == "Ii" or $exdata[0] == "Xi" or $exdata[0] == "Wi" or $ex_data[0] == "readdd" or $exdata[0] == "Vi" or $data == "YESSend" or $exdata[0] == "YSb"){
-$site = $BUYSNUM[number][$Detector][site];
-$number = $BUYSNUM[number][$Detector][phone];
-$idnumber = $BUYSNUM[number][$Detector][idnumber];
-$finish = $BUYSNUM[number][$Detector][finish];
-$times = $BUYSNUM[number][$Detector][times];
-$idSend = $BUYSNUM[number][$Detector][idSend];
-$status = $BUYSNUM[number][$Detector][status];
-$app = $BUYSNUM[number][$Detector][app];
+$site = $BUYSNUM['number'][$Detector]['site'];
+$number = $BUYSNUM['number'][$Detector]['phone'];
+$idnumber = $BUYSNUM['number'][$Detector]['idnumber'];
+$finish = $BUYSNUM['number'][$Detector]['finish'];
+$times = $BUYSNUM['number'][$Detector]['times'];
+$idSend = $BUYSNUM['number'][$Detector]['idSend'];
+$status = $BUYSNUM['number'][$Detector]['status'];
+$app = $BUYSNUM['number'][$Detector]['app'];
 $api=json_decode(file_get_contents("https://".$_SERVER['SERVER_NAME']."/$bot/api-sites.php?action=getStatus&site=$site&app=$app&idnumber=$idnumber&number=$number"),1);
-$status = $api[status];
-$code = $api[code];
-$agen = $api[agen];
-$Location = $api[Location];
+$status = $api['status'];
+$code = $api['code'];
+$agen = $api['agen'];
+$Location = $api['Location'];
 $api2=json_decode(file_get_contents("https://".$_SERVER['SERVER_NAME']."/$bot/api-sites.php?action=addBlack&site=$site&app=$app&idnumber=$idnumber&number=$number"),1);
-$status2 = $api2[status];
+$status2 = $api2['status'];
 if($user == null){
 $uss = "لايوجد ❌";
 }else{
@@ -650,9 +663,9 @@ bot('answercallbackquery',[
 unlink("data/id/$id/step.txt");
 exit;
 }elseif($code == null and $status == 1){
-$BUYSNUM[number][$Detector][status] = -1;
+$BUYSNUM['number'][$Detector]['status'] = -1;
 NumbBuys($BUYSNUM,$EM);
-$ORDERALL[$idSend][status] = -1;
+$ORDERALL[$idSend]['status'] = -1;
 OrdAll($ORDERALL);
 unlink("data/id/$id/restriction.txt");
 }
@@ -949,7 +962,7 @@ exit;
 if($exdata[0] == "Ii" or $exdata[0] == "Xi"){
 $zero = $exdata[1];
 $zero = md5($zero);
-$price=$buy['number'][$zero][price];
+$price=$buy['number'][$zero]['price'];
 if($price > $Balance or $Balance < $price or $Balance == 0 or $Balance === 0 or $Balance < 0){
 bot('EditMessageText',[
 'chat_id'=>$chat_id,
@@ -1211,20 +1224,20 @@ bot('sendMessage',[
 ]
 ])
 ]);
-$sool['card'][$card][amount] = $point;
+$sool['card'][$card]['amount'] = $point;
 $sool['card'][$card]['idcar'] = $EM;
 $sool['card'][$card]['order'] = $cardmy;
 $sool['card'][$card]['name'] = $first;
 Sool($sool);
-$BUYSCARD[$cardmy][idCard] = $cardbot2;
-$BUYSCARD[$cardmy][card] = $card;
-$BUYSCARD[$cardmy][price] = $price;
-$BUYSCARD[$cardmy][id] = $idcard;
-$BUYSCARD[$cardmy][status] = -1;
-$BUYSCARD[$cardmy][amount] = $point;
+$BUYSCARD[$cardmy]['idCard'] = $cardbot2;
+$BUYSCARD[$cardmy]['card'] = $card;
+$BUYSCARD[$cardmy]['price'] = $price;
+$BUYSCARD[$cardmy]['id'] = $idcard;
+$BUYSCARD[$cardmy]['status'] = -1;
+$BUYSCARD[$cardmy]['amount'] = $point;
 $BUYSCARD[$cardmy]["chat-id"] = $id;
-$BUYSCARD[$cardmy][emil] = $EM;
-$BUYSCARD[$cardmy][DAY] = $DAY;
+$BUYSCARD[$cardmy]['emil'] = $EM;
+$BUYSCARD[$cardmy]['DAY'] = $DAY;
 CardBuys($BUYSCARD,$EM);
 $points = file_get_contents("EMILS/$EM/points.txt");
 $as = $points - $price;
@@ -1232,7 +1245,7 @@ file_put_contents("EMILS/$EM/points.txt",$as);
 $pointall = file_get_contents("data/txt/pointall.txt");
 $alls = $pointall - $price;
 file_put_contents("data/txt/pointall.txt",$alls);
-$ORDERALL[card] +=1;
+$ORDERALL['card'] +=1;
 OrdAll($ORDERALL);
 unlink("data/id/$id/step.txt");
 }
@@ -1326,21 +1339,21 @@ unlink("data/id/$id/step.txt");
 }
 if($exdata[0] == "YECard"){
 $carts=$exdata[1];
-if($sool['card'][$carts] !== null and $sool['card'][$carts][amount] !== null){
+if($sool['card'][$carts] !== null and $sool['card'][$carts]['amount'] !== null){
 $amount = $sool['card'][$carts]['amount'];
 $emil = $sool['card'][$carts]['idcar'];
 $name = $sool['card'][$carts]['name'];
 $idcar = $EMILS['emils'][$emil]['id'];
 $order = $sool['card'][$carts]['order'];
 $BUYSCARD = json_decode(file_get_contents("EMILS/$emil/card.json"),true);
-$idcard = $BUYSCARD[$order][idcard];
+$idcard = $BUYSCARD[$order]['idcard'];
 $points = $Balance + $amount;
-$idSend = $BUYSCARD[$order][id];
+$idSend = $BUYSCARD[$order]['id'];
 $idd = $BUYSCARD[$order]["chat-id"];
-$emile = $BUYSCARD[$order][emil];
-$price = $BUYSCARD[$order][price];
-$idcard = $BUYSCARD[$order][idcard];
-$DAYS = $BUYSCARD[$order][DAY];
+$emile = $BUYSCARD[$order]['emil'];
+$price = $BUYSCARD[$order]['price'];
+$idcard = $BUYSCARD[$order]['idcard'];
+$DAYS = $BUYSCARD[$order]['DAY'];
 if($emil == "ok"){
 $idSend = rand(1234567,9999999);
 $idd = $sool['card'][$carts]['id'];
@@ -1405,30 +1418,30 @@ $rubleall = file_get_contents("data/txt/rubleall.txt");
 $dlls = $rubleall + $amount;
 file_put_contents("data/txt/rubleall.txt",$dlls);
 }
-if($sool['card'][$carts][order] !== null){
-$BUYSCARD[$order][status] = 1;
+if($sool['card'][$carts]['order'] !== null){
+$BUYSCARD[$order]['status'] = 1;
 $BUYSCARD[$order]["user_chat-id"] = $id;
-$BUYSCARD[$order][user_emil] = $EM;
-$BUYSCARD[$order][DAY_shipping] = $DAY;
+$BUYSCARD[$order]['user_emil'] = $EM;
+$BUYSCARD[$order]['DAY_shipping'] = $DAY;
 CardBuys($BUYSCARD,$emil);
 }
-$BUYSPRIC[$pricmy][id] = $idSend;
-$BUYSPRIC[$pricmy][card] = $carts;
-$BUYSPRIC[$pricmy][price] = $price;
-$BUYSPRIC[$pricmy][status] = 2;
-$BUYSPRIC[$pricmy][idcard] = $idcard;
-$BUYSPRIC[$pricmy][amount] = $amount;
-$BUYSPRIC[$pricmy][via] = 4;
+$BUYSPRIC[$pricmy]['id'] = $idSend;
+$BUYSPRIC[$pricmy]['card'] = $carts;
+$BUYSPRIC[$pricmy]['price'] = $price;
+$BUYSPRIC[$pricmy]['status'] = 2;
+$BUYSPRIC[$pricmy]['idcard'] = $idcard;
+$BUYSPRIC[$pricmy]['amount'] = $amount;
+$BUYSPRIC[$pricmy]['via'] = 4;
 $BUYSPRIC[$pricmy]["chat-id"] = $id;
 $BUYSPRIC[$pricmy]["user_chat-id"] = $idd;
-$BUYSPRIC[$pricmy][emil] = $EM;
-$BUYSPRIC[$pricmy][user_emil] = $emile;
-$BUYSPRIC[$pricmy][user_name] = $name;
-$BUYSPRIC[$pricmy][DAY] = $DAYS;
-$BUYSPRIC[$pricmy][DAY_shipping] = $DAY;
+$BUYSPRIC[$pricmy]['emil'] = $EM;
+$BUYSPRIC[$pricmy]['user_emil'] = $emile;
+$BUYSPRIC[$pricmy]['user_name'] = $name;
+$BUYSPRIC[$pricmy]['DAY'] = $DAYS;
+$BUYSPRIC[$pricmy]['DAY_shipping'] = $DAY;
 PricBuys($BUYSPRIC,$EM);
 if($emil != $EM){
-$ORDERALL[add] +=1;
+$ORDERALL['add'] +=1;
 OrdAll($ORDERALL);
 $rubles = file_get_contents("EMILS/$EM/rubles.txt");
 $ds = $rubles - $amount;
@@ -1837,35 +1850,35 @@ $as = $points - $coun;
 file_put_contents("EMILS/$EM/points.txt",$as);
 $BUYSPRIC = json_decode(file_get_contents("EMILS/$emils/price.json"),true);
 $idd = count($BUYSPRIC);
-$BUYSSEND[$sendmy][idSend] = $sendbot+1;
-$BUYSSEND[$sendmy][id] = $idSend;
-$BUYSSEND[$sendmy][price] = $coun;
-$BUYSSEND[$sendmy][amount] = $price;
-$BUYSSEND[$sendmy][code] = $code;
-$BUYSSEND[$sendmy][status] = 1;
-$BUYSSEND[$sendmy][idpric] = $idd;
+$BUYSSEND[$sendmy]['idSend'] = $sendbot+1;
+$BUYSSEND[$sendmy]['id'] = $idSend;
+$BUYSSEND[$sendmy]['price'] = $coun;
+$BUYSSEND[$sendmy]['amount'] = $price;
+$BUYSSEND[$sendmy]['code'] = $code;
+$BUYSSEND[$sendmy]['status'] = 1;
+$BUYSSEND[$sendmy]['idpric'] = $idd;
 $BUYSSEND[$sendmy]["chat-id"] = $id;
 $BUYSSEND[$sendmy]["user_chat-id"] = null;
-$BUYSSEND[$sendmy][user_emil] = $emils;
-$BUYSSEND[$sendmy][DAY] = $DAY;
+$BUYSSEND[$sendmy]['user_emil'] = $emils;
+$BUYSSEND[$sendmy]['DAY'] = $DAY;
 SendBuys($BUYSSEND,$EM);
-$BUYSPRIC[$idd][id] = $idSend;
-$BUYSPRIC[$idd][price] = $price;
-$BUYSPRIC[$idd][status] = 1;
-$BUYSPRIC[$idd][code] = $code;
-$BUYSPRIC[$idd][idsend] = $sendbot+1;
-$BUYSPRIC[$idd][via] = 3;
+$BUYSPRIC[$idd]['id'] = $idSend;
+$BUYSPRIC[$idd]['price'] = $price;
+$BUYSPRIC[$idd]['status'] = 1;
+$BUYSPRIC[$idd]['code'] = $code;
+$BUYSPRIC[$idd]['idsend'] = $sendbot+1;
+$BUYSPRIC[$idd]['via'] = 3;
 $BUYSPRIC[$idd]["chat-id"] = null;
 $BUYSPRIC[$idd]["user_chat-id"] = $id;
-$BUYSPRIC[$idd][emil] = $emils;
-$BUYSPRIC[$idd][user_emil] = $EM;
-$BUYSPRIC[$idd][user_name] = $first;
-$BUYSPRIC[$idd][DAY] = $DAY;
+$BUYSPRIC[$idd]['emil'] = $emils;
+$BUYSPRIC[$idd]['user_emil'] = $EM;
+$BUYSPRIC[$idd]['user_name'] = $first;
+$BUYSPRIC[$idd]['DAY'] = $DAY;
 PricBuys($BUYSPRIC,$emils);
-$ORDERALL[send] +=1;
+$ORDERALL['send'] +=1;
 OrdAll($ORDERALL);
-$sool[send][$code][idsen] = $EM;
-$sool[send][$code][order] = $sendmy;
+$sool['send'][$code]['idsen'] = $EM;
+$sool['send'][$code]['order'] = $sendmy;
 Sool($sool);
 unlink("data/id/$id/step.txt");
 }
@@ -1889,13 +1902,13 @@ file_put_contents("data/id/$id/step.txt","receiptpri");
 }
 if($text && $text != null && $text != '/start' && $step == "receiptpri"){
 $code=$text;
-$order = $sool[send][$code][order];
-$emil = $sool[send][$code][idsen];
+$order = $sool['send'][$code]['order'];
+$emil = $sool['send'][$code]['idsen'];
 $BUYSSEND = json_decode(file_get_contents("EMILS/$emil/send.json"),true);
 $idd=$BUYSSEND[$order]["chat-id"];
-$price=$BUYSSEND[$order][amount];
-$idSend=$BUYSSEND[$order][id];
-if($BUYSSEND[$order][status] == 3){
+$price=$BUYSSEND[$order]['amount'];
+$idSend=$BUYSSEND[$order]['id'];
+if($BUYSSEND[$order]['status'] == 3){
 bot('sendmessage',[
 'chat_id'=>$chat_id,
 'text'=>"
@@ -1905,7 +1918,7 @@ bot('sendmessage',[
 'parse_mode'=>"MarkDown",
 ]);
 unlink("data/id/$id/step.txt");
-}elseif($sool[send][$code] == null or $BUYSSEND[$order][code] != $text or $BUYSSEND[$order][user_emil] != $EM or $BUYSSEND[$order][status] != 1){
+}elseif($sool['send'][$code] == null or $BUYSSEND[$order]['code'] != $text or $BUYSSEND[$order]['user_emil'] != $EM or $BUYSSEND[$order]['status'] != 1){
 bot('sendmessage',[
 'chat_id'=>$chat_id,
 'text'=>"
@@ -1949,16 +1962,16 @@ file_put_contents("EMILS/$EM/points.txt",$as);
 $rubles = file_get_contents("EMILS/$EM/rubles.txt");
 $ds = $rubles + $price;
 file_put_contents("EMILS/$EM/rubles.txt",$ds);
-$idd = $BUYSSEND[$order][idpric];
-$BUYSSEND[$order][status] = 2;
+$idd = $BUYSSEND[$order]['idpric'];
+$BUYSSEND[$order]['status'] = 2;
 $BUYSSEND[$order]["user_chat-id"] = $id;
-$BUYSSEND[$order][DAY_shipping] = $DAY;
+$BUYSSEND[$order]['DAY_shipping'] = $DAY;
 SendBuys($BUYSSEND,$emil);
-$BUYSPRIC[$idd][status] = 2;
+$BUYSPRIC[$idd]['status'] = 2;
 $BUYSPRIC[$idd]["chat-id"] = $id;
-$BUYSPRIC[$idd][DAY_shipping] = $DAY;
+$BUYSPRIC[$idd]['DAY_shipping'] = $DAY;
 PricBuys($BUYSPRIC,$EM);
-unset($sool['send'][$BUYSSEND[$order][code]]);
+unset($sool['send'][$BUYSSEND[$order]['code']]);
 Sool($sool);
 unlink("data/id/$id/step.txt");
 }
@@ -1967,8 +1980,8 @@ unlink("data/id/$id/step.txt");
 if($exdata[0] == "CancelTransfer"){
 $order=$exdata[1];
 $status_send = $exdata[2];
-$idSend = $BUYSSEND[$order][id];
-$status = $BUYSSEND[$order][status];
+$idSend = $BUYSSEND[$order]['id'];
+$status = $BUYSSEND[$order]['status'];
 if($status != 1 or $status_send != $idSend){
 if($sendmy == null){
 bot('EditMessageText',[
@@ -2003,9 +2016,9 @@ break;
 if($BUYSSEND[8] != null){
 $to="التالي. ⬅️";
 }
-$statuse = $num[status];
+$statuse = $num['status'];
 $status=str_replace(["-1","1","2","3"],["🚫","⏰","☑️","⏰"],$statuse);
-$idSend = $num[id];
+$idSend = $num['id'];
 $key['inline_keyboard'][] = [['text'=>"$idSend",'callback_data'=>"sSendBuy#$zero#$idSend#1"],['text'=>"$status",'callback_data'=>"file"]];
 }
 $key['inline_keyboard'][] = [['text'=>"$to",'callback_data'=>"Download4#2"]];
@@ -2052,12 +2065,12 @@ bot('sendMessage',[
 ]
 ])
 ]);
-$idd = $BUYSSEND[$order][idpric];
-$idEM = $BUYSSEND[$order][user_emil];
-$BUYSSEND[$order][status] = 3;
+$idd = $BUYSSEND[$order]['idpric'];
+$idEM = $BUYSSEND[$order]['user_emil'];
+$BUYSSEND[$order]['status'] = 3;
 SendBuys($BUYSSEND,$EM);
 $BUYSPRIC = json_decode(file_get_contents("EMILS/$idEM/price.json"),true);
-$BUYSPRIC[$idd][status] = 3;
+$BUYSPRIC[$idd]['status'] = 3;
 PricBuys($BUYSPRIC,$idEM);
 unlink("data/id/$id/step.txt");
 }
@@ -2067,9 +2080,9 @@ if($exdata[0] == "yesTransfer"){
 $order=$exdata[1];
 $emil=$exdata[2];
 $BUYSSEND = json_decode(file_get_contents("EMILS/$emil/send.json"),true);
-$status = $BUYSSEND[$order][status];
-$idSend = $BUYSSEND[$order][id];
-$coun = $BUYSSEND[$order][price];
+$status = $BUYSSEND[$order]['status'];
+$idSend = $BUYSSEND[$order]['id'];
+$coun = $BUYSSEND[$order]['price'];
 $idds = $BUYSSEND[$order]["chat-id"];
 if($status != 3){
 bot('EditMessageText',[
@@ -2108,22 +2121,22 @@ bot('sendMessage',[
 ",
 'parse_mode'=>"MarkDown",
 ]);
-$idd = $BUYSSEND[$order][idpric];
-$idEM = $BUYSSEND[$order][user_emil];
+$idd = $BUYSSEND[$order]['idpric'];
+$idEM = $BUYSSEND[$order]['user_emil'];
 $idch = $EMILS['emils'][$idEM]['id'];
-$BUYSSEND[$order][status] = -1;
+$BUYSSEND[$order]['status'] = -1;
 $BUYSSEND[$order]["user_chat-id"] = $idch;
-$BUYSSEND[$order][DAY_shipping] = $DAY;
+$BUYSSEND[$order]['DAY_shipping'] = $DAY;
 SendBuys($BUYSSEND,$emil);
 $BUYSPRIC = json_decode(file_get_contents("EMILS/$idEM/price.json"),true);
-$BUYSPRIC[$idd][status] = -1;
+$BUYSPRIC[$idd]['status'] = -1;
 $BUYSPRIC[$idd]["chat-id"] = $idch;
-$BUYSPRIC[$idd][DAY_shipping] = $DAY;
+$BUYSPRIC[$idd]['DAY_shipping'] = $DAY;
 PricBuys($BUYSPRIC,$idEM);
 $points = file_get_contents("EMILS/$emil/points.txt");
 $as = $points + $coun;
 file_put_contents("EMILS/$emil/points.txt",$as);
-unset($sool['send'][$BUYSSEND[$order][code]]);
+unset($sool['send'][$BUYSSEND[$order]['code']]);
 Sool($sool);
 unlink("data/id/$id/step.txt");
 }
@@ -2133,8 +2146,8 @@ if($exdata[0] == "noTransfer"){
 $order=$exdata[1];
 $emil=$exdata[2];
 $BUYSSEND = json_decode(file_get_contents("EMILS/$emil/send.json"),true);
-$status = $BUYSSEND[$order][status];
-$idSend = $BUYSSEND[$order][id];
+$status = $BUYSSEND[$order]['status'];
+$idSend = $BUYSSEND[$order]['id'];
 $idds = $BUYSSEND[$order]["chat-id"];
 if($status != 3){
 bot('EditMessageText',[
@@ -2172,12 +2185,12 @@ bot('sendMessage',[
 ",
 'parse_mode'=>"MarkDown",
 ]);
-$idd = $BUYSSEND[$order][idpric];
-$idEM = $BUYSSEND[$order][user_emil];
-$BUYSSEND[$order][status] = 1;
+$idd = $BUYSSEND[$order]['idpric'];
+$idEM = $BUYSSEND[$order]['user_emil'];
+$BUYSSEND[$order]['status'] = 1;
 SendBuys($BUYSSEND,$emil);
 $BUYSPRIC = json_decode(file_get_contents("EMILS/$idEM/price.json"),true);
-$BUYSPRIC[$idd][status] = 1;
+$BUYSPRIC[$idd]['status'] = 1;
 PricBuys($BUYSPRIC,$idEM);
 unlink("data/id/$id/step.txt");
 }
@@ -2380,31 +2393,31 @@ exit;
 }else{
 $key     = [];
 $key['inline_keyboard'][] = [['text'=>'- الرقم ☎️','callback_data'=>'no'],['text'=>'- الكود 💭','callback_data'=>'no'],['text'=>'- السعر 💰','callback_data'=>'no']];
-foreach($BUYSNUM[number] as $zero=>$num){
-if($num['status'] == $add and $num[type] == "direct"){
+foreach($BUYSNUM['number'] as $zero=>$num){
+if($num['status'] == $add and $num['type'] == "direct"){
 $oop++;
 if($oop >= $jk){
 break;
 }
 if($oop >= $fj){
-if($BUYSNUM[number][$jk] != null){
+if($BUYSNUM['number'][$jk] != null){
 $to="التالي. ⬅️";
 }
-if($BUYSNUM[number][$ij] != null){
+if($BUYSNUM['number'][$ij] != null){
 $s = "➡️ السابق.";
 }
-$status = $num[phone];
-$number = $num[phone];
+$status = $num['phone'];
+$number = $num['phone'];
 if($number != null){
 $number = substr($number, 0,+8)."•••";
 }
-$addcod = count($num[sms])-1;
-$code = $num[sms][$addcod][code];
+$addcod = count($num['sms'])-1;
+$code = $num['sms'][$addcod]['code'];
 if($code == null and $status != null){
 $code = '------';
 }
-$price = $num[price];
-$idSend = $num[idSend];
+$price = $num['price'];
+$idSend = $num['idSend'];
 $key['inline_keyboard'][] = [['text'=>"$number",'callback_data'=>"sNumber#$idSend#$status#$add#$con"],['text'=>"$code",'callback_data'=>"sNumber#$idSend#$status#$add#$con"],['text'=>"$price",'callback_data'=>"sNumber#$idSend#$status#$add#$con"]];
 }
 }
@@ -2509,27 +2522,27 @@ exit;
 }else{
 $key     = [];
 $key['inline_keyboard'][] = [['text'=>'- الرقم ☎️','callback_data'=>'no'],['text'=>'- الكود 💭','callback_data'=>'no'],['text'=>'- السعر 💰','callback_data'=>'no']];
-foreach($BUYSNUM[number] as $zero=>$num){
-if($num[type] == "ready"){
+foreach($BUYSNUM['number'] as $zero=>$num){
+if($num['type'] == "ready"){
 $oop++;
 if($oop >= $jk){
 break;
 }
 if($oop >= $fj){
-if($BUYSNUM[number][$jk] != null){
+if($BUYSNUM['number'][$jk] != null){
 $to="التالي. ⬅️";
 }
-if($BUYSNUM[number][$ij] != null){
+if($BUYSNUM['number'][$ij] != null){
 $s = "➡️ السابق.";
 }
-$status = $num[phone];
-$number = $num[phone];
+$status = $num['phone'];
+$number = $num['phone'];
 if($number != null){
 $number = substr($number, 0,+8)."•••";
 }
-$code = $num[code];
-$price = $num[price];
-$idSend = $num[idSend];
+$code = $num['code'];
+$price = $num['price'];
+$idSend = $num['idSend'];
 $key['inline_keyboard'][] = [['text'=>"$number",'callback_data'=>"sReady#$idSend#$status#$con"],['text'=>"$code",'callback_data'=>"sReady#$idSend#$status#$con"],['text'=>"$price",'callback_data'=>"sReady#$idSend#$status#$con"]];
 }
 }
@@ -2618,10 +2631,10 @@ $to="التالي. ⬅️";
 if($BUYSCARD[$ij] != null){
 $s = "➡️ السابق.";
 }
-$status = $num[status];
+$status = $num['status'];
 $status=str_replace(["-1","1"],["🎫","🎟"],$status);
-$card = $num[card];
-$idCard = $num[idCard];
+$card = $num['card'];
+$idCard = $num['idCard'];
 $key['inline_keyboard'][] = [['text'=>"$card",'callback_data'=>"sCardBuy#$zero#$card#$con"],['text'=>"$status",'callback_data'=>"file"]];
 }
 }
@@ -2710,9 +2723,9 @@ $to="التالي. ⬅️";
 if($BUYSSEND[$ij] != null){
 $s = "➡️ السابق.";
 }
-$statuse = $num[status];
+$statuse = $num['status'];
 $status=str_replace(["-1","1","2","3"],["🚫","⏰","☑️","⏰"],$statuse);
-$idSend = $num[id];
+$idSend = $num['id'];
 $key['inline_keyboard'][] = [['text'=>"$idSend",'callback_data'=>"sSendBuy#$zero#$idSend#$con"],['text'=>"$status",'callback_data'=>"file"]];
 }
 }
@@ -2801,14 +2814,14 @@ $to="التالي. ⬅️";
 if($BUYSPRIC[$ij] != null){
 $s = "➡️ السابق.";
 }
-$idSend = $num[id];
-$via = $num[via];
-$price = $num[price];
+$idSend = $num['id'];
+$via = $num['via'];
+$price = $num['price'];
 if($via == 4){
-$price = $num[amount];
+$price = $num['amount'];
 }
 $via=str_replace(["1","2","3","4"],["الإدارة","الوكيل","صديق","كرت شحن"],$via);
-$DAYS=$num[DAY];
+$DAYS=$num['DAY'];
 $year = substr("$DAYS", 0,4);
 $month = substr("$DAYS", 4,2);
 $day = substr("$DAYS", 6,2);
@@ -2853,34 +2866,34 @@ $idSend = $ex_data[1];
 $status_num = $ex_data[2];
 $adds = $ex_data[3];
 $con = $ex_data[4];
-$order=$ORDERALL[$idSend][order];
-$account=$ORDERALL[$idSend][account];
-$number = $BUYSNUM[number][$order][phone];
-$idSend = $BUYSNUM[number][$order][idSend];
-$code1 = $BUYSNUM[number][$order][sms][0][code];
-$code2 = $BUYSNUM[number][$order][sms][1][code];
-$code3 = $BUYSNUM[number][$order][sms][2][code];
-$code4 = $BUYSNUM[number][$order][sms][3][code];
-$code5 = $BUYSNUM[number][$order][sms][4][code];
-$code6 = $BUYSNUM[number][$order][sms][5][code];
-$code7 = $BUYSNUM[number][$order][sms][6][code];
-$code8 = $BUYSNUM[number][$order][sms][7][code];
-$code9 = $BUYSNUM[number][$order][sms][8][code];
-$allcod = count($BUYSNUM[number][$order][sms]);
-$statuse = $BUYSNUM[number][$order][status];
-$finish = $BUYSNUM[number][$order][finish];
-$times = $BUYSNUM[number][$order][times];
-$add = $BUYSNUM[number][$order][add];
-$app = $BUYSNUM[number][$order][app];
-$operator = $BUYSNUM[number][$order][operator];
-$idnumber = $BUYSNUM[number][$order][idnumber];
-$site = $BUYSNUM[number][$order][site];
-$country = $BUYSNUM[number][$order][country];
-$zero = $BUYSNUM[number][$order][zero];
-$price = $BUYSNUM[number][$order][price];
+$order=$ORDERALL[$idSend]['order'];
+$account=$ORDERALL[$idSend]['account'];
+$number = $BUYSNUM['number'][$order]['phone'];
+$idSend = $BUYSNUM['number'][$order]['idSend'];
+$code1 = $BUYSNUM['number'][$order]['sms'][0]['code'];
+$code2 = $BUYSNUM['number'][$order]['sms'][1]['code'];
+$code3 = $BUYSNUM['number'][$order]['sms'][2]['code'];
+$code4 = $BUYSNUM['number'][$order]['sms'][3]['code'];
+$code5 = $BUYSNUM['number'][$order]['sms'][4]['code'];
+$code6 = $BUYSNUM['number'][$order]['sms'][5]['code'];
+$code7 = $BUYSNUM['number'][$order]['sms'][6]['code'];
+$code8 = $BUYSNUM['number'][$order]['sms'][7]['code'];
+$code9 = $BUYSNUM['number'][$order]['sms'][8]['code'];
+$allcod = count($BUYSNUM['number'][$order]['sms']);
+$statuse = $BUYSNUM['number'][$order]['status'];
+$finish = $BUYSNUM['number'][$order]['finish'];
+$times = $BUYSNUM['number'][$order]['times'];
+$add = $BUYSNUM['number'][$order]['add'];
+$app = $BUYSNUM['number'][$order]['app'];
+$operator = $BUYSNUM['number'][$order]['operator'];
+$idnumber = $BUYSNUM['number'][$order]['idnumber'];
+$site = $BUYSNUM['number'][$order]['site'];
+$country = $BUYSNUM['number'][$order]['country'];
+$zero = $BUYSNUM['number'][$order]['zero'];
+$price = $BUYSNUM['number'][$order]['price'];
 $BALANCE = $Balance - $price;
-$idnum = $BUYSNUM[number][$order][id];
-$DAYS = $BUYSNUM[number][$order][DAY];
+$idnum = $BUYSNUM['number'][$order]['id'];
+$DAYS = $BUYSNUM['number'][$order]['DAY'];
 $year = substr("$DAYS", 0,4);
 $month = substr("$DAYS", 4,2);
 $day = substr("$DAYS", 6,2);
@@ -2947,10 +2960,10 @@ $status = "إنتهى الوقت ⌛️";
 }
 if($code1 == null){ 
 $api=json_decode(file_get_contents("https://mega-ye.net/API/api-sites.php?action=getStatus&bot=$bot&site=$site&idnumber=$idnumber&number=$number&app=$app"),1);
-$status_api = $api[status];
-$statuscode = $api[code];
-$agen = $api[agen];
-$Location = $api[Location];
+$status_api = $api['status'];
+$statuscode = $api['code'];
+$agen = $api['agen'];
+$Location = $api['Location'];
 if($agen == "200"){
 $agen = "- طلب الكود مرة أخرى🔂";
 }else{
@@ -2963,17 +2976,17 @@ $end = "- إنهاء الحالة ☑️";
 if($statuse == 1 and $statuscode == null and time() - $times >= $finish){
 $status = "إنتهى الوقت ⌛️";
 $statuse = -2;
-$BUYSNUM[number][$order][status] = -2;
+$BUYSNUM['number'][$order]['status'] = -2;
 NumbBuys($BUYSNUM,$EM);
-$ORDERALL[$idSend][status] = -2;
+$ORDERALL[$idSend]['status'] = -2;
 OrdAll($ORDERALL);
 }
 if($statuse == 2 and time() - $times >= $finish){
 $status = "تم التفعيل ☑️";
 $statuse = 3;
-$BUYSNUM[number][$order][status] = 3;
+$BUYSNUM['number'][$order]['status'] = 3;
 NumbBuys($BUYSNUM,$EM);
-$ORDERALL[$idSend][status] = 3;
+$ORDERALL[$idSend]['status'] = 3;
 OrdAll($ORDERALL);
 }
 if($statuse == 1 and time() - $times < $finish){
@@ -3109,13 +3122,13 @@ bot('sendMessage',[
 ]
 ])
 ]);
-$BUYSNUM[number][$order][sms][0][code] = $statuscode;
-$BUYSNUM[number][$order][status] = 2;
-$BUYSNUM[number_my] += 1;
+$BUYSNUM['number'][$order]['sms'][0]['code'] = $statuscode;
+$BUYSNUM['number'][$order]['status'] = 2;
+$BUYSNUM['number_my'] += 1;
 NumbBuys($BUYSNUM,$EM);
-$ORDERALL[$idSend][status] = 2;
-$ORDERALL[number] +=1;
-$ORDERALL[ruble] +=$price;
+$ORDERALL[$idSend]['status'] = 2;
+$ORDERALL['number'] +=1;
+$ORDERALL['ruble'] +=$price;
 OrdAll($ORDERALL);
 $points = file_get_contents("EMILS/$EM/points.txt");
 $as = $points - $price;
@@ -3162,23 +3175,23 @@ if($exdata[0] == "gets"){
 $EEM = $exdata[1];
 $code = $exdata[2];
 $idSend = $exdata[3];
-$order=$ORDERALL[$idSend][order];
-$account=$ORDERALL[$idSend][account];
+$order=$ORDERALL[$idSend]['order'];
+$account=$ORDERALL[$idSend]['account'];
 $idd=$EMILS['emils'][$EEM]['id'];
 $BUYSNUM = json_decode(file_get_contents("EMILS/$account/number.json"),true);
-if($BUYSNUM[number][$order][sms][0][code] == null){
+if($BUYSNUM['number'][$order]['sms'][0]['code'] == null){
 bot('answercallbackquery',[
 'callback_query_id' => $update->callback_query->id,
 'text'=>"☑️ - تم إضافة الكود وفك تقييد العضو بنجاح",
 'show_alert'=>true
 ]);
-$BUYSNUM[number][$order][sms][0][code] = $code;
-$BUYSNUM[number][$order][status] = 2;
-$BUYSNUM[number_my] += 1;
+$BUYSNUM['number'][$order]['sms'][0]['code'] = $code;
+$BUYSNUM['number'][$order]['status'] = 2;
+$BUYSNUM['number_my'] += 1;
 NumbBuys($BUYSNUM,$account);
-$ORDERALL[$idSend][status] = 2;
-$ORDERALL[number] +=1;
-$ORDERALL[ruble] +=$price;
+$ORDERALL[$idSend]['status'] = 2;
+$ORDERALL['number'] +=1;
+$ORDERALL['ruble'] +=$price;
 OrdAll($ORDERALL);
 unlink("data/id/$idd/restriction.txt");
 unlink("data/id/$id/step.txt");
@@ -3189,15 +3202,15 @@ if($ex_data[0] == "sReady"){
 $idSend = $ex_data[1];
 $status_num = $ex_data[2];
 $con = $ex_data[3];
-$order=$ORDERALL[$idSend][order];
-$account=$ORDERALL[$idSend][account];
-$name = $BUYSNUM[number][$order][name];
-$app = $BUYSNUM[number][$order][app];
-$number = $BUYSNUM[number][$order][phone];
-$code = $BUYSNUM[number][$order][code];
-$price = $BUYSNUM[number][$order][price];
-$idnumber = $BUYSNUM[number][$order][id];
-$DAYS = $BUYSNUM[number][$order][DAY];
+$order=$ORDERALL[$idSend]['order'];
+$account=$ORDERALL[$idSend]['account'];
+$name = $BUYSNUM['number'][$order]['name'];
+$app = $BUYSNUM['number'][$order]['app'];
+$number = $BUYSNUM['number'][$order]['phone'];
+$code = $BUYSNUM['number'][$order]['code'];
+$price = $BUYSNUM['number'][$order]['price'];
+$idnumber = $BUYSNUM['number'][$order]['id'];
+$DAYS = $BUYSNUM['number'][$order]['DAY'];
 $year = substr("$DAYS", 0,4);
 $month = substr("$DAYS", 4,2);
 $day = substr("$DAYS", 6,2);
@@ -3270,10 +3283,10 @@ if($ex_data[0] == "sCardBuy"){
 $order = $ex_data[1];
 $status_card = $ex_data[2];
 $con = $ex_data[3];
-$card = $BUYSCARD[$order][card];
-$price = $BUYSCARD[$order][price];
-$idcard = $BUYSCARD[$order][id];
-$status = $BUYSCARD[$order][status];
+$card = $BUYSCARD[$order]['card'];
+$price = $BUYSCARD[$order]['price'];
+$idcard = $BUYSCARD[$order]['id'];
+$status = $BUYSCARD[$order]['status'];
 $idd = $BUYSCARD[$order]["user_chat-id"];
 $api = json_decode(file_get_contents("http://api.telegram.org/bot".API_KEY."/getChat?chat_id=".$idd.""));
 $name =$api->result->first_name;
@@ -3285,8 +3298,8 @@ $yes="☑️ - رابط العضو ↖️";
 }else{
 $statues = "✅ - الحالة : *لم يتم شحن الكرت* 🎫";
 }
-$amount = $BUYSCARD[$order][amount];
-$DAYS = $BUYSCARD[$order][DAY];
+$amount = $BUYSCARD[$order]['amount'];
+$DAYS = $BUYSCARD[$order]['DAY'];
 $year = substr("$DAYS", 0,4);
 $month = substr("$DAYS", 4,2);
 $day = substr("$DAYS", 6,2);
@@ -3358,13 +3371,13 @@ if($ex_data[0] == "sSendBuy"){
 $order = $ex_data[1];
 $status_send = $ex_data[2];
 $con = $ex_data[3];
-$idSend = $BUYSSEND[$order][id];
-$price = $BUYSSEND[$order][amount];
-$coun = $BUYSSEND[$order][price];
+$idSend = $BUYSSEND[$order]['id'];
+$price = $BUYSSEND[$order]['amount'];
+$coun = $BUYSSEND[$order]['price'];
 $rubel = $coun-$price;
-$code = $BUYSSEND[$order][code];
-$status = $BUYSSEND[$order][status];
-$emils = $BUYSSEND[$order][user_emil];
+$code = $BUYSSEND[$order]['code'];
+$status = $BUYSSEND[$order]['status'];
+$emils = $BUYSSEND[$order]['user_emil'];
 $idd = $BUYSSEND[$order]["user_chat-id"];
 $api = json_decode(file_get_contents("http://api.telegram.org/bot".API_KEY."/getChat?chat_id=".$idd.""));
 $name =$api->result->first_name;
@@ -3381,7 +3394,7 @@ $statues = "✅ - الحالة : *جاري إنتظار إلغاء الطلب* �
 }else{
 $statues = "✅ - الحالة : *تم الإلغاء* 🚫";
 }
-$DAYS = $BUYSSEND[$order][DAY];
+$DAYS = $BUYSSEND[$order]['DAY'];
 $year = substr("$DAYS", 0,4);
 $month = substr("$DAYS", 4,2);
 $day = substr("$DAYS", 6,2);
@@ -3455,23 +3468,23 @@ if($ex_data[0] == "sSendPric"){
 $order = $ex_data[1];
 $status_send = $ex_data[2];
 $con = $ex_data[3];
-$idSend = $BUYSPRIC[$order][id];
-$card = $BUYSPRIC[$order][card];
-$amount = $BUYSPRIC[$order][amount];
-$price = $BUYSPRIC[$order][price];
-$status = $BUYSPRIC[$order][status];
-$via = $BUYSPRIC[$order][via];
-$emils = $BUYSPRIC[$order][user_emil];
+$idSend = $BUYSPRIC[$order]['id'];
+$card = $BUYSPRIC[$order]['card'];
+$amount = $BUYSPRIC[$order]['amount'];
+$price = $BUYSPRIC[$order]['price'];
+$status = $BUYSPRIC[$order]['status'];
+$via = $BUYSPRIC[$order]['via'];
+$emils = $BUYSPRIC[$order]['user_emil'];
 $idd = $BUYSPRIC[$order]["user_chat-id"];
 $api = json_decode(file_get_contents("http://api.telegram.org/bot".API_KEY."/getChat?chat_id=".$idd.""));
 $name =$api->result->first_name;
 if($name == null){
-$name = $BUYSPRIC[$order][user_name];
+$name = $BUYSPRIC[$order]['user_name'];
 }
 $iduser =$api->result->username;
 if($status == 2){
 $statues = "تم الإستلام ☑️";
-$code = $BUYSPRIC[$order][code];
+$code = $BUYSPRIC[$order]['code'];
 $code = "*$code*";
 }elseif($status == 1){
 $statues = "العملية تحت الإنتظار ⏰";
@@ -3481,10 +3494,10 @@ $statues = "جاري إلغاء العملية ⏳";
 $code = "[********]";
 }else{
 $statues = "العملية ملغية 🚫";
-$code = $BUYSPRIC[$order][code];
+$code = $BUYSPRIC[$order]['code'];
 $code = "*$code*";
 }
-$DAYS = $BUYSPRIC[$order][DAY];
+$DAYS = $BUYSPRIC[$order]['DAY'];
 $year = substr("$DAYS", 0,4);
 $month = substr("$DAYS", 4,2);
 $day = substr("$DAYS", 6,2);
