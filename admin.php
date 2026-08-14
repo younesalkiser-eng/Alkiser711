@@ -1,5 +1,17 @@
 <?php
 // name.php يتم تحميله مسبقًا من index.php قبل استدعاء admin.php
+// تحويل Telegram ID إلى اسم الحساب الداخلي المستخدم في مجلد EMILS.
+if (!function_exists('admin_emile_by_id')) {
+    function admin_emile_by_id($telegram_id) {
+        global $EMIL, $EMILS;
+        $telegram_id = trim((string)$telegram_id);
+        if ($telegram_id === '' || !isset($EMIL[$telegram_id]['emil'])) {
+            return null;
+        }
+        $emile = $EMIL[$telegram_id]['emil'];
+        return (!empty($EMILS['emils'][$emile]['emil'])) ? $emile : null;
+    }
+}
 #=========={النفايات}==========#
 if($data == 'delPHP'){
 bot('answercallbackquery',[
@@ -556,6 +568,12 @@ $addduraincloud = "mm.duraincloud.com 🌐 ❌";
 $duraincloud = "";
 $delduraincloud = "duraincloud-no";
 }
+// NumberPanel يعمل عبر api-sites.php ولا يحتاج مفتاحًا منفصلًا داخل APPS.
+$numberpanel_enabled = (($addblusdel['numberpanel']['add'] ?? 'ok') === 'ok');
+$addnumberpanel = $numberpanel_enabled ? 'numberpanel.tech 🌐 ✅' : 'numberpanel.tech 🌐 ❌';
+$numberpanel = $numberpanel_enabled ? 'numberpanel.tech 🌐' : '';
+$delnumberpanel = $numberpanel_enabled ? 'numberpanel-ok' : 'numberpanel-no';
+
 #=========={النسبة}==========#
 if($addblusdel['System'] == "direct"){
 if($text == 'نسبة' or $text == 'نسبه' or $data == "نسبة"){
@@ -798,6 +816,7 @@ bot('EditMessageText',[
 [['text'=>"$fastpva",'callback_data'=>"Bj-Ri"],['text'=>"$dropsms",'callback_data'=>"Bj-Si"]],
 [['text'=>"$sms7",'callback_data'=>"Bj-Ti"]],
 [['text'=>"$sellotp",'callback_data'=>"Bj-Ui"],['text'=>"$duraincloud",'callback_data'=>"Bj-Vi"]],
+[['text'=>"$numberpanel",'callback_data'=>"Bj-Wi"]],
 [['text'=>"رجوع",'callback_data'=>'c']]
 ]
 ])
@@ -830,6 +849,7 @@ bot('sendMessage',[
 [['text'=>"$addfastpva",'callback_data'=>"adminadd-$delfastpva"],['text'=>"$adddropsms",'callback_data'=>"adminadd-$deldropsms"]],
 [['text'=>"$add24sms7",'callback_data'=>"adminadd-$del24sms7"]],
 [['text'=>"$addsellotp",'callback_data'=>"adminadd-$delsellotp"],['text'=>"$addduraincloud",'callback_data'=>"adminadd-$delduraincloud"]],
+[['text'=>"$addnumberpanel",'callback_data'=>"adminadd-$delnumberpanel"]],
 [['text'=>"رجوع",'callback_data'=>'c']]
 ]
 ])
@@ -1168,6 +1188,19 @@ $delduraincloud = "duraincloud-no";
 $bb="تم حذف المورد بنجاح ✅";
 }
 }
+if($code == "numberpanel"){
+if($qu == 'ok'){
+$addnumberpanel = "numberpanel.tech 🌐 ✅";
+$numberpanel = "numberpanel.tech 🌐";
+$delnumberpanel = "numberpanel-ok";
+$bb="تم إضافة المورد بنجاح ✅";
+}else{
+$addnumberpanel = "numberpanel.tech 🌐 ❌";
+$numberpanel = "";
+$delnumberpanel = "numberpanel-no";
+$bb="تم حذف المورد بنجاح ✅";
+}
+}
 bot('answercallbackquery',[
 'callback_query_id'=>$update->callback_query->id,
 'text'=>"$bb",
@@ -1196,6 +1229,7 @@ bot('EditMessageText',[
 [['text'=>"$addfastpva",'callback_data'=>"adminadd-$delfastpva"],['text'=>"$adddropsms",'callback_data'=>"adminadd-$deldropsms"]],
 [['text'=>"$add24sms7",'callback_data'=>"adminadd-$del24sms7"]],
 [['text'=>"$addsellotp",'callback_data'=>"adminadd-$delsellotp"],['text'=>"$addduraincloud",'callback_data'=>"adminadd-$delduraincloud"]],
+[['text'=>"$addnumberpanel",'callback_data'=>"adminadd-$delnumberpanel"]],
 [['text'=>'رجوع','callback_data'=>'c']]
 ]
 ])
@@ -1390,8 +1424,8 @@ Bnds($addblusdel);
 #=========={التطبيقات}==========#
 if($exdata[0] == "Bj"){
 $api = $exdata[1];
-$API = str_replace(["Ai","Bi","Ci","Di","Ei","Fi","Gi","Hi","Ji","Ki","Li","Mi","Ni","Oi","Pi","Qi","Ri","Si","Ti","Ui","Vi"],["5sim.biz","tempnum.org","sms-man.ru","Vak-sms.com","sms-acktiwator.ru","pvapins.com","sms3t.com","onlinesim.io","supersmstech.com","viotp.com","simsms.org","grizzlysms.com","sms-code.ru","tiger-sms.com","2ndline.io","receivesms.store","sms.fastpva.com","dropsms.ru","24sms7.com","sellotp.com","mm.duraincloud.com"],$api);
-$keybo=str_replace(["Ai","Bi","Ci","Di","Ei","Fi","Gi","Hi","Ji","Ki","Li","Mi","Ni","Oi","Pi","Qi","Ri","Si","Ti","Ui","Vi"],["iA","iA","iA","iB","iC","iD","iE","iF","iG","iE","iH","iJ","iK","iL","iM","iN","iO","iP","iQ","iE","iR"],$api);
+$API = str_replace(["Ai","Bi","Ci","Di","Ei","Fi","Gi","Hi","Ji","Ki","Li","Mi","Ni","Oi","Pi","Qi","Ri","Si","Ti","Ui","Vi"],["5sim.biz","tempnum.org","sms-man.ru","Vak-sms.com","sms-acktiwator.ru","pvapins.com","sms3t.com","onlinesim.io","supersmstech.com","viotp.com","simsms.org","grizzlysms.com","sms-code.ru","tiger-sms.com","2ndline.io","receivesms.store","sms.fastpva.com","dropsms.ru","24sms7.com","sellotp.com","mm.duraincloud.com","numberpanel.tech"],$api);
+$keybo=str_replace(["Ai","Bi","Ci","Di","Ei","Fi","Gi","Hi","Ji","Ki","Li","Mi","Ni","Oi","Pi","Qi","Ri","Si","Ti","Ui","Vi","Wi"],["iA","iA","iA","iB","iC","iD","iE","iF","iG","iE","iH","iJ","iK","iL","iM","iN","iO","iP","iQ","iE","iR","iV"],$api);
 $array=["Ai","Bi","Ci","Di","Hi","Ji","Li","Mi","Ni","Oi","Si","Ti"];
 if(in_array($api,$array) and $addblusdel['System'] == "direct"){
 $keybo = "iV";
@@ -1433,8 +1467,8 @@ unlink("zzz.json");
 if($exdata[0] == "Fx"){
 $add = $exdata[1];
 $api = $exdata[2];
-$API = str_replace(["Ai","Bi","Ci","Di","Ei","Fi","Gi","Hi","Ji","Ki","Li","Mi","Ni","Oi","Pi","Qi","Ri","Si","Ti","Ui","Vi"],["5sim.biz","tempnum.org","sms-man.ru","Vak-sms.com","sms-acktiwator.ru","pvapins.com","sms3t.com","onlinesim.io","supersmstech.com","viotp.com","simsms.org","grizzlysms.com","sms-code.ru","tiger-sms.com","2ndline.io","receivesms.store","sms.fastpva.com","dropsms.ru","24sms7.com","sellotp.com","mm.duraincloud.com"],$api);
-$keybo=str_replace(["Ai","Bi","Ci","Di","Ei","Fi","Gi","Hi","Ji","Ki","Li","Mi","Ni","Oi","Pi","Qi","Ri","Si","Ti","Ui","Vi"],["iA","iA","iA","iB","iC","iD","iE","iF","iG","iE","iH","iJ","iK","iL","iM","iN","iO","iP","iQ","iE","iR"],$api);
+$API = str_replace(["Ai","Bi","Ci","Di","Ei","Fi","Gi","Hi","Ji","Ki","Li","Mi","Ni","Oi","Pi","Qi","Ri","Si","Ti","Ui","Vi"],["5sim.biz","tempnum.org","sms-man.ru","Vak-sms.com","sms-acktiwator.ru","pvapins.com","sms3t.com","onlinesim.io","supersmstech.com","viotp.com","simsms.org","grizzlysms.com","sms-code.ru","tiger-sms.com","2ndline.io","receivesms.store","sms.fastpva.com","dropsms.ru","24sms7.com","sellotp.com","mm.duraincloud.com","numberpanel.tech"],$api);
+$keybo=str_replace(["Ai","Bi","Ci","Di","Ei","Fi","Gi","Hi","Ji","Ki","Li","Mi","Ni","Oi","Pi","Qi","Ri","Si","Ti","Ui","Vi","Wi"],["iA","iA","iA","iB","iC","iD","iE","iF","iG","iE","iH","iJ","iK","iL","iM","iN","iO","iP","iQ","iE","iR","iV"],$api);
 $array=["Ai","Bi","Ci","Di","Hi","Ji","Li","Mi","Ni","Oi","Si","Ti"];
 if(in_array($api,$array) and $addblusdel['System'] == "direct"){
 $keybo = "iV";
@@ -2478,7 +2512,7 @@ $i = 0;
 $e = 0;
 $key     = [];
 foreach ($continent as $ar=>$zero){
-$API = str_replace(["Ai","Bi","Ci","Di","Hi","Ji","Li","Mi","Ni","Si"],["5sim.biz","tempnum.org","sms-man.ru","Vak-sms.com","onlinesim.io","supersmstech.com","simsms.org","grizzlysms.com","sms-code.ru","dropsms.ru"],$api);
+$API = str_replace(["Ai","Bi","Ci","Di","Hi","Ji","Li","Mi","Ni","Si","Wi"],["5sim.biz","tempnum.org","sms-man.ru","Vak-sms.com","onlinesim.io","supersmstech.com","simsms.org","grizzlysms.com","sms-code.ru","dropsms.ru","numberpanel.tech"],$api);
 $e++;
 $key['inline_keyboard'][$i][]=['text'=>"$ar",'callback_data'=>"allservice-$app-$add-$api-$zero"];
 if($e%3 == 0) $i++;
@@ -2500,11 +2534,34 @@ unlink("data/id/$id/step.txt");
 }
 }
 #=========={servicall}==========#
-if($exdata[0] == "allservice" and $addblusdel['System'] == "direct"){
+if($exdata[0] == "allservice" and ($addblusdel['System'] == "direct" or $exdata[3] == "Wi")){
 $app=$exdata[1];
 $add=$exdata[2];
 $api=$exdata[3];
 $country=$exdata[4];
+if($api == "Wi"){
+$name = $_co['country'][$country] ?? $country;
+$APP_S = str_replace(["wa","tg","fb","ig","tw","lf","go","im","vi","fu","nf","au","ot"],["WhatsApp","Telegram","Facebook","Instagram","Twitter","Tiktok","Google","Imo","Viber","Snapchat","Netflix","Haraj","Other"],$app);
+$api_price=json_decode(file_get_contents("https://".$_SERVER['SERVER_NAME']."/$bot/api-sites.php?action=getPrice&site=numberpanel&country=$country&app=$app"),1);
+$price=(float)($api_price['price'] ?? 0);
+if(($api_price['status'] ?? 0) == "200" and $price > 0 and ($addblusdel['numberpanel']['add'] ?? 'ok') == "ok"){
+$code=md5("$country$app$add"."numberpanel");
+$buy['number'][$code]['country']=$country;
+$buy['number'][$code]['app']=$app;
+$buy['number'][$code]['operator']=0;
+$buy['number'][$code]['api']='Wi';
+$buy['number'][$code]['site']='numberpanel';
+$buy['number'][$code]['add']=$add;
+$buy['number'][$code]['name']=$name;
+$buy['number'][$code]['APP']=$APP_S;
+$buy['number'][$code]['Type']='not_directly';
+$buy['number'][$code]['price']=$price;
+$buy['country_app']["$add-$country"] += 1;
+Addserver($buy);
+}
+unlink("data/id/$id/step.txt");
+exit;
+}
 $status = str_replace(["10","11","12","13","14","1","2","3","4","5","6","7","8","9"],["J","K","L","M","N","A","B","C","D","E","F","G","H","I"],$add);
 $apps = str_replace(["B","C","D","E","F","G","H","I","J","K","L","M","N"],["whatsapp","telegram","facebook","instagram","twitter","tiktok","google","imo","viber","snapchat","netflix","haraj","other"],$status);
 $APP = str_replace(["B","C","D","E","F","G","H","I","J","K","L","M","N"],["واتسأب","تيليجرام","فيسبوك","إنستقرام","تويتر","تيك توك","قوقل","ايمو","فايبر","سناب شات","نيتفلكس","حراج","السيرفر العام"],$status);
@@ -5745,8 +5802,8 @@ $operator = str_replace(["3819","3543","3528","3328","2001","3825","3521","3326"
 if($api == "Ui"){
 $operator = str_replace(["MOBIFONE","VINAPHONE","VIETTEL","VIETNAMOBILE","ITELECOM"],["43","44","45","46","47"],$operator);
 }
-$site = str_replace(["Ai","Bi","Ci","Di","Ei","Fi","Gi","Hi","Ji","Ki","Li","Mi","Ni","Oi","Pi","Qi","Ri","Si","Ti","Ui","Vi"],["5sim","tempnum","man","vak","acktiwator","pvapins","sms3t","onlinesim","supersmstech","viotp","simsms","grizzly","smscode","tiger","2ndline","store","fastpva","dropsms","24sms7","sellotp","duraincloud"],$api);
-$API = str_replace(["Ai","Bi","Ci","Di","Ei","Fi","Gi","Hi","Ji","Ki","Li","Mi","Ni","Oi","Pi","Qi","Ri","Si","Ti","Ui","Vi"],["5sim.biz","tempnum.org","sms-man.ru","Vak-sms.com","sms-acktiwator.ru","pvapins.com","sms3t.com","onlinesim.io","supersmstech.com","viotp.com","simsms.org","grizzlysms.com","sms-code.ru","tiger-sms.com","2ndline.io","receivesms.store","sms.fastpva.com","dropsms.ru","24sms7.com","sellotp.com","mm.duraincloud.com"],$api);
+$site = str_replace(["Ai","Bi","Ci","Di","Ei","Fi","Gi","Hi","Ji","Ki","Li","Mi","Ni","Oi","Pi","Qi","Ri","Si","Ti","Ui","Vi","Wi"],["5sim","tempnum","man","vak","acktiwator","pvapins","sms3t","onlinesim","supersmstech","viotp","simsms","grizzly","smscode","tiger","2ndline","store","fastpva","dropsms","24sms7","sellotp","duraincloud","numberpanel"],$api);
+$API = str_replace(["Ai","Bi","Ci","Di","Ei","Fi","Gi","Hi","Ji","Ki","Li","Mi","Ni","Oi","Pi","Qi","Ri","Si","Ti","Ui","Vi"],["5sim.biz","tempnum.org","sms-man.ru","Vak-sms.com","sms-acktiwator.ru","pvapins.com","sms3t.com","onlinesim.io","supersmstech.com","viotp.com","simsms.org","grizzlysms.com","sms-code.ru","tiger-sms.com","2ndline.io","receivesms.store","sms.fastpva.com","dropsms.ru","24sms7.com","sellotp.com","mm.duraincloud.com","numberpanel.tech"],$api);
 if($add >=1 and $add <=14){
 $status = str_replace(["10","11","12","13","14","1","2","3","4","5","6","7","8","9"],["J","K","L","M","N","A","B","C","D","E","F","G","H","I"],$add);
 }else{
@@ -5761,7 +5818,7 @@ $price=$api_price['price'];
 }elseif($status=="0"){
 $price = "❌";
 }
-$keybo=str_replace(["Ai","Bi","Ci","Di","Ei","Fi","Gi","Hi","Ji","Ki","Li","Mi","Ni","Oi","Pi","Qi","Ri","Si","Ti","Ui","Vi"],["iA","iA","iA","iB","iC","iD","iE","iF","iG","iE","iH","iJ","iK","iL","iM","iN","iO","iP","iQ","iE","iR"],$api);
+$keybo=str_replace(["Ai","Bi","Ci","Di","Ei","Fi","Gi","Hi","Ji","Ki","Li","Mi","Ni","Oi","Pi","Qi","Ri","Si","Ti","Ui","Vi","Wi"],["iA","iA","iA","iB","iC","iD","iE","iF","iG","iE","iH","iJ","iK","iL","iM","iN","iO","iP","iQ","iE","iR","iV"],$api);
 $code = "$country$app$operator$add";
 $code = md5($code);
 if($price == null){
@@ -5842,7 +5899,7 @@ $i=$random[$num]['add'];
 if($i==null){
 $i=0;
 }
-$keybo=str_replace(["Ai","Bi","Ci","Di","Ei","Fi","Gi","Hi","Ji","Ki","Li","Mi","Ni","Oi","Pi","Qi","Ri","Si","Ti","Ui","Vi"],["iA","iA","iA","iB","iC","iD","iE","iF","iG","iE","iH","iJ","iK","iL","iM","iN","iO","iP","iQ","iE","iR"],$api);
+$keybo=str_replace(["Ai","Bi","Ci","Di","Ei","Fi","Gi","Hi","Ji","Ki","Li","Mi","Ni","Oi","Pi","Qi","Ri","Si","Ti","Ui","Vi","Wi"],["iA","iA","iA","iB","iC","iD","iE","iF","iG","iE","iH","iJ","iK","iL","iM","iN","iO","iP","iQ","iE","iR","iV"],$api);
 $code = "$country$app$operator$add";
 $code = md5($code);
 bot('sendmessage',[
@@ -6549,7 +6606,7 @@ $app = $buy['number'][$zero]['app'];
 $country = $buy['number'][$zero]['country'];
 $add = $buy['number'][$zero]['add'];
 $api = $buy['number'][$zero]['api'];
-$API = str_replace(["Ai","Bi","Ci","Di","Ei","Fi","Gi","Hi","Ji","Ki","Li","Mi","Ni","Oi","Pi","Qi","Ri","Si","Ti","Ui","Vi"],["5sim.biz","tempnum.org","sms-man.ru","Vak-sms.com","sms-acktiwator.ru","pvapins.com","sms3t.com","onlinesim.io","supersmstech.com","viotp.com","simsms.org","grizzlysms.com","sms-code.ru","tiger-sms.com","2ndline.io","receivesms.store","sms.fastpva.com","dropsms.ru","24sms7.com","sellotp.com","mm.duraincloud.com"],$api);
+$API = str_replace(["Ai","Bi","Ci","Di","Ei","Fi","Gi","Hi","Ji","Ki","Li","Mi","Ni","Oi","Pi","Qi","Ri","Si","Ti","Ui","Vi"],["5sim.biz","tempnum.org","sms-man.ru","Vak-sms.com","sms-acktiwator.ru","pvapins.com","sms3t.com","onlinesim.io","supersmstech.com","viotp.com","simsms.org","grizzlysms.com","sms-code.ru","tiger-sms.com","2ndline.io","receivesms.store","sms.fastpva.com","dropsms.ru","24sms7.com","sellotp.com","mm.duraincloud.com","numberpanel.tech"],$api);
 if($add >=1 and $add <=14){
 $status = str_replace(["10","11","12","13","14","1","2","3","4","5","6","7","8","9"],["J","K","L","M","N","A","B","C","D","E","F","G","H","I"],$add);
 }else{
@@ -6598,7 +6655,7 @@ $app = $buy['number'][$zero]['app'];
 $country = $buy['number'][$zero]['country'];
 $add = $buy['number'][$zero]['add'];
 $api = $buy['number'][$zero]['api'];
-$API = str_replace(["Ai","Bi","Ci","Di","Ei","Fi","Gi","Hi","Ji","Ki","Li","Mi","Ni","Oi","Pi","Qi","Ri","Si","Ti","Ui","Vi"],["5sim.biz","tempnum.org","sms-man.ru","Vak-sms.com","sms-acktiwator.ru","pvapins.com","sms3t.com","onlinesim.io","supersmstech.com","viotp.com","simsms.org","grizzlysms.com","sms-code.ru","tiger-sms.com","2ndline.io","receivesms.store","sms.fastpva.com","dropsms.ru","24sms7.com","sellotp.com","mm.duraincloud.com"],$api);
+$API = str_replace(["Ai","Bi","Ci","Di","Ei","Fi","Gi","Hi","Ji","Ki","Li","Mi","Ni","Oi","Pi","Qi","Ri","Si","Ti","Ui","Vi"],["5sim.biz","tempnum.org","sms-man.ru","Vak-sms.com","sms-acktiwator.ru","pvapins.com","sms3t.com","onlinesim.io","supersmstech.com","viotp.com","simsms.org","grizzlysms.com","sms-code.ru","tiger-sms.com","2ndline.io","receivesms.store","sms.fastpva.com","dropsms.ru","24sms7.com","sellotp.com","mm.duraincloud.com","numberpanel.tech"],$api);
 if($add >=1 and $add <=14){
 $status = str_replace(["10","11","12","13","14","1","2","3","4","5","6","7","8","9"],["J","K","L","M","N","A","B","C","D","E","F","G","H","I"],$add);
 }else{
@@ -8479,7 +8536,7 @@ bot('EditMessageText',[
 'chat_id'=>$chat_id,
 'message_id'=>$message_id,
 'text'=>"
-🔰 - أرسل الحساب (الإيميل) الذي تريد إضافة الرصيد إليه ♻️
+🔰 - أرسل Telegram ID للمستخدم الذي تريد إضافة الرصيد إليه ♻️
 ",
 'reply_markup'=>json_encode([
 'inline_keyboard'=>[
@@ -8490,11 +8547,13 @@ bot('EditMessageText',[
 file_put_contents("data/id/$id/step.txt","addcoin");
 }
 if($text && $text != '/start' && $step == 'addcoin'){
-if($EMILS['emils'][$text]['emil'] == null){
+$target_id = trim($text);
+$target_emile = $EMIL[$target_id]['emil'] ?? null;
+if($target_emile == null){
 bot('sendMessage',[
 'chat_id'=>$chat_id,
 'text'=>"
-⛔️ - عذرا مطوري هذا الإيميل محذوف أو ليس صحيح
+⛔️ - عذرًا، هذا الـ Telegram ID غير موجود أو غير صحيح
 ",
 'reply_to_message_id'=>$message_id,
 'reply_markup'=>json_encode([
@@ -8507,7 +8566,7 @@ bot('sendMessage',[
 bot('sendMessage',[
 'chat_id'=>$chat_id,
 'text'=>"
-💰 - أرسل عدد الروبل التي تريد إضافتة للحساب [$text] ♻️
+💰 - أرسل عدد الروبل التي تريد إضافته للمستخدم [$target_id] ♻️
 ",
 'reply_to_message_id'=>$message_id,
 'reply_markup'=>json_encode([
@@ -8516,12 +8575,18 @@ bot('sendMessage',[
 ]
 ])
 ]);
-file_put_contents("data/id/$id/step.txt","addcoin2|$text");
+file_put_contents("data/id/$id/step.txt","addcoin2|$target_id");
 }
 }
 if($text && $text != '/start' && $exstep[0] == 'addcoin2'){
-$emile = $exstep[1];
-$reo = $EMILS['emils'][$emile]['id'];
+$target_id = trim($exstep[1]);
+$emile = $EMIL[$target_id]['emil'] ?? null;
+$reo = $target_id;
+if($emile == null){
+    bot('sendMessage',['chat_id'=>$chat_id,'text'=>"⛔️ - Telegram ID غير موجود أو غير صحيح"]);
+    unlink("data/id/$id/step.txt");
+    exit;
+}
 $prices = file_get_contents("EMILS/$emile/points.txt");
 $pricet = $prices + $text;
 $idSend = rand(1234567,9999999);
@@ -8538,7 +8603,7 @@ bot('sendMessage',[
 'text'=>"
 ⚜ - تم إضافة *$text* روبل بنجاح ✅
 
-🌐 - الحساب: *$emile*
+🆔 - Telegram ID: *$reo*
 ♻️ - رصيدة الآن: *$pricet* 💰
 ",
 'parse_mode'=>"MarkDown",
@@ -8559,38 +8624,40 @@ file_put_contents("EMILS/$emile/rubles.txt",$ds);
 $rubleall = file_get_contents("data/txt/rubleall.txt");
 $dlls = $rubleall + $text;
 file_put_contents("data/txt/rubleall.txt",$dlls);
-$BUYSPRIC = json_decode(file_get_contents('EMILS/$emile/price.json'),true);
+$BUYSPRIC = json_decode(file_get_contents("EMILS/$emile/price.json"),true);
 $idd = count($BUYSPRIC);
-$BUYSPRIC[$idd][id] = $idSend;
-$BUYSPRIC[$idd][price] = $text;
-$BUYSPRIC[$idd][status] = 2;
-$BUYSPRIC[$idd][via] = 1;
+$BUYSPRIC[$idd]['id'] = $idSend;
+$BUYSPRIC[$idd]['price'] = $text;
+$BUYSPRIC[$idd]['status'] = 2;
+$BUYSPRIC[$idd]['via'] = 1;
 $BUYSPRIC[$idd]["chat-id"] = $reo;
 $BUYSPRIC[$idd]["user_chat-id"] = $id;
-$BUYSPRIC[$idd][emil] = $emile;
-$BUYSPRIC[$idd][user_emil] = $EM;
-$BUYSPRIC[$idd][user_name] = $first;
-$BUYSPRIC[$idd][DAY] = $DAY;
+$BUYSPRIC[$idd]['emil'] = $emile;
+$BUYSPRIC[$idd]['user_emil'] = $EM;
+$BUYSPRIC[$idd]['user_name'] = $first;
+$BUYSPRIC[$idd]['DAY'] = $DAY;
 PricBuys($BUYSPRIC,$emile);
 $ORDERALL['add'] +=1;
 OrdAll($ORDERALL);
 unlink("data/id/$id/step.txt");
 }
 if($extext[0] == 'اضف'){
-$emile = $extext[1];
+$target_id = trim($extext[1]);
 $taxt = $extext[2];
-$reo = $EMILS['emils'][$emile]['id'];
+$emile = $EMIL[$target_id]['emil'] ?? null;
+$reo = $target_id;
+if($taxt == null || $emile == null){
+    bot('sendMessage',['chat_id'=>$chat_id,'text'=>"⛔️ - Telegram ID أو قيمة الشحن غير صحيحة"]);
+    exit;
+}
 $prices = file_get_contents("EMILS/$emile/points.txt");
 $pricet = $prices + $taxt;
 $idSend = rand(1234567,9999999);
-if($taxt == null){
-exit;
-}
-if($EMILS['emils'][$emile]['emil'] == null){
+if($emile == null){
 bot('sendMessage',[
 'chat_id'=>$chat_id,
 'text'=>"
-⛔️ - عذرا مطوري هذا الإيميل او الأيدي محذوف أو ليس صحيح
+⛔️ - عذرًا، Telegram ID غير موجود أو غير صحيح
 ",
 'reply_to_message_id'=>$message_id,
 'reply_markup'=>json_encode([
@@ -8616,7 +8683,7 @@ bot('sendMessage',[
 'text'=>"
 ⚜ - تم إضافة *$taxt* روبل بنجاح ✅
 
-🌐 - الحساب: *$emile*
+🆔 - Telegram ID: *$reo*
 ♻️ - رصيدة الآن: *$pricet* 💰
 ",
 'parse_mode'=>"MarkDown",
@@ -8637,18 +8704,18 @@ file_put_contents("EMILS/$emile/rubles.txt",$ds);
 $rubleall = file_get_contents("data/txt/rubleall.txt");
 $dlls = $rubleall + $taxt;
 file_put_contents("data/txt/rubleall.txt",$dlls);
-$BUYSPRIC = json_decode(file_get_contents('EMILS/$emile/price.json'),true);
+$BUYSPRIC = json_decode(file_get_contents("EMILS/$emile/price.json"),true);
 $idd = count($BUYSPRIC);
-$BUYSPRIC[$idd][id] = $idSend;
-$BUYSPRIC[$idd][price] = $taxt;
-$BUYSPRIC[$idd][status] = 2;
-$BUYSPRIC[$idd][via] = 1;
+$BUYSPRIC[$idd]['id'] = $idSend;
+$BUYSPRIC[$idd]['price'] = $taxt;
+$BUYSPRIC[$idd]['status'] = 2;
+$BUYSPRIC[$idd]['via'] = 1;
 $BUYSPRIC[$idd]["chat-id"] = $reo;
 $BUYSPRIC[$idd]["user_chat-id"] = $id;
-$BUYSPRIC[$idd][emil] = $emile;
-$BUYSPRIC[$idd][user_emil] = $EM;
-$BUYSPRIC[$idd][user_name] = $first;
-$BUYSPRIC[$idd][DAY] = $DAY;
+$BUYSPRIC[$idd]['emil'] = $emile;
+$BUYSPRIC[$idd]['user_emil'] = $EM;
+$BUYSPRIC[$idd]['user_name'] = $first;
+$BUYSPRIC[$idd]['DAY'] = $DAY;
 PricBuys($BUYSPRIC,$emile);
 $ORDERALL['add'] +=1;
 OrdAll($ORDERALL);
@@ -8660,7 +8727,7 @@ bot('EditMessageText',[
 'chat_id'=>$chat_id,
 'message_id'=>$message_id,
 'text'=>"
-🔰 - أرسل الحساب (الإيميل) الذي تريد خصم الرصيد منه ♻️
+🔰 - أرسل Telegram ID للمستخدم الذي تريد خصم الرصيد منه ♻️
 ",
 'reply_markup'=>json_encode([
 'inline_keyboard'=>[
@@ -8671,11 +8738,13 @@ bot('EditMessageText',[
 file_put_contents("data/id/$id/step.txt","delcoin");
 }
 if($text && $text != '/start' && $step == 'delcoin'){
-if($EMILS['emils'][$text]['emil'] == null){
+$target_id = trim($text);
+$target_emile = admin_emile_by_id($target_id);
+if($target_emile == null){
 bot('sendMessage',[
 'chat_id'=>$chat_id,
 'text'=>"
-⛔️ - عذرا مطوري هذا الإيميل محذوف أو ليس صحيح
+⛔️ - عذرًا، Telegram ID غير موجود أو ليس صحيحًا
 ",
 'reply_to_message_id'=>$message_id,
 'reply_markup'=>json_encode([
@@ -8688,7 +8757,7 @@ bot('sendMessage',[
 bot('sendMessage',[
 'chat_id'=>$chat_id,
 'text'=>"
-💰 - أرسل عدد الروبل التي تريد خصمة من الحساب [$text] ♻️
+💰 - أرسل عدد الروبل التي تريد خصمة من الحساب [$target_id] ♻️
 ",
 'reply_to_message_id'=>$message_id,
 'reply_markup'=>json_encode([
@@ -8697,12 +8766,18 @@ bot('sendMessage',[
 ]
 ])
 ]);
-file_put_contents("data/id/$id/step.txt","delcoin2|$text");
+file_put_contents("data/id/$id/step.txt","delcoin2|$target_id");
 }
 }
 if($text && $text != '/start' && $exstep[0] == 'delcoin2'){
-$emile = $exstep[1];
-$reo = $EMILS['emils'][$emile]['id'];
+$target_id = trim($exstep[1]);
+$emile = admin_emile_by_id($target_id);
+$reo = $target_id;
+if($emile == null){
+    bot('sendMessage',['chat_id'=>$chat_id,'text'=>'⛔️ - Telegram ID غير موجود أو غير صحيح']);
+    unlink("data/id/$id/step.txt");
+    exit;
+}
 $prices = file_get_contents("EMILS/$emile/points.txt");
 $pricet = $prices - $text;
 if($text > $prices){
@@ -8725,7 +8800,7 @@ bot('sendMessage',[
 'text'=>"
 ⚜ - تم خصم *$text* روبل بنجاح ✅
 
-🌐 - الحساب: *$emile*
+🆔 - Telegram ID: *$reo*
 ♻️ - رصيدة الآن: *$pricet* 💰
 ",
 'parse_mode'=>"MarkDown",
@@ -8750,16 +8825,17 @@ file_put_contents("data/txt/rubleall.txt",$dlls);
 }
 }
 if($extext[0] == 'خصم'){
-$emile = $extext[1];
+$target_id = trim($extext[1]);
+$emile = admin_emile_by_id($target_id);
 $taxt = $extext[2];
-$reo = $EMILS['emils'][$emile]['id'];
+$reo = $target_id;
 $prices = file_get_contents("EMILS/$emile/points.txt");
 $pricet = $prices - $taxt;
-if($EMILS['emils'][$emile]['emil'] == null){
+if($emile == null){
 bot('sendMessage',[
 'chat_id'=>$chat_id,
 'text'=>"
-⛔️ - عذرا مطوري هذا الإيميل محذوف أو ليس صحيح
+⛔️ - عذرًا، Telegram ID غير موجود أو ليس صحيحًا
 ",
 'reply_to_message_id'=>$message_id,
 'reply_markup'=>json_encode([
@@ -8818,7 +8894,7 @@ bot('EditMessageText',[
 'chat_id'=>$chat_id,
 'message_id'=>$message_id,
 'text'=>"
-🔰 - أرسل الحساب (الإيميل) الذي تريد رفعة ك وكيل في البوت 🎖
+🔰 - أرسل Telegram ID للمستخدم الذي تريد رفعه كوكيل في البوت 🎖
 ",
 'reply_markup'=>json_encode([
 'inline_keyboard'=>[
@@ -8829,7 +8905,9 @@ bot('EditMessageText',[
 file_put_contents("data/id/$id/step.txt","addagent");
 }
 if($text && $text != '/start' && $step == 'addagent'){
-$idEM = $EMILS['emils'][$text]['id'];
+$target_id = trim($text);
+$target_emile = admin_emile_by_id($target_id);
+$idEM = $target_id;
 $api = json_decode(file_get_contents("http://api.telegram.org/bot".API_KEY."/getChat?chat_id=".$idEM.""));
 $name =$api->result->first_name;
 $users =$api->result->username;
@@ -8837,11 +8915,11 @@ $txusers="@$users";
 if($users == null){
 $txusers="لا يوجد ♻️";
 }
-if($EMILS['emils'][$text]['emil'] == null){
+if($target_emile == null){
 bot('sendMessage',[
 'chat_id'=>$chat_id,
 'text'=>"
-⛔️ - عذرا مطوري هذا الإيميل محذوف أو ليس صحيح
+⛔️ - عذرًا، Telegram ID غير موجود أو ليس صحيحًا
 ",
 'reply_to_message_id'=>$message_id,
 'reply_markup'=>json_encode([
@@ -8851,7 +8929,7 @@ bot('sendMessage',[
 ])
 ]);
 unlink("data/id/$id/step.txt");
-}elseif($agents['gents'][$text] != null){
+}elseif($agents['gents'][$target_id] != null){
 bot('sendMessage',[
 'chat_id'=>$chat_id,
 'text'=>"
@@ -8891,7 +8969,7 @@ bot('sendMessage',[
 ]
 ])
 ]);
-$agents['gents'][$text] = $idEM;
+$agents['gents'][$target_id] = $idEM;
 Agent($agents);
 unlink("data/id/$id/step.txt");
 }
@@ -9019,11 +9097,8 @@ bot('EditMessageText',[
 file_put_contents("data/id/$id/step.txt","copchat");
 }
 if($text && $text != '/start' && $step == 'copchat'){
-$emils = $EMIL[$text]['emil'];
-if($emils == null){
-$emils = $EMILS['emils'][$text]['emil'];
-}
-$ero = $EMILS['emils'][$emils]['id'];
+$ero = trim($text);
+$emils = admin_emile_by_id($ero);
 $pricet = file_get_contents("EMILS/$emils/points.txt");
 if($pricet == null){
 $pricet = 0;
@@ -9032,7 +9107,7 @@ if($EMILS['emils'][$emils]['emil'] == null){
 bot('sendMessage',[
 'chat_id'=>$chat_id,
 'text'=>"
-⛔️ - عذرا مطوري هذا الإيميل او الأيدي محذوف أو ليس صحيح
+⛔️ - عذرًا، Telegram ID غير موجود أو ليس صحيحًا
 ",
 'reply_to_message_id'=>$message_id,
 'reply_markup'=>json_encode([
@@ -9080,7 +9155,7 @@ if($EMILS['emils'][$emils]['emil'] == null){
 bot('sendMessage',[
 'chat_id'=>$chat_id,
 'text'=>"
-⛔️ - عذرا مطوري هذا الإيميل او الأيدي محذوف أو ليس صحيح
+⛔️ - عذرًا، Telegram ID غير موجود أو ليس صحيحًا
 ",
 'reply_to_message_id'=>$message_id,
 'reply_markup'=>json_encode([
@@ -9415,7 +9490,7 @@ bot('EditMessageText',[
 'chat_id'=>$chat_id,
 'message_id'=>$message_id,
 'text'=>'
-☑️ - ارسل الحساب (الإيميل) الذي تريد تقييده في البوت ♻️
+☑️ - أرسل Telegram ID للمستخدم الذي تريد تقييده في البوت ♻️
 ',
 'reply_markup'=>json_encode([ 
 'inline_keyboard'=>[
@@ -9426,20 +9501,26 @@ bot('EditMessageText',[
 file_put_contents("data/id/$id/step.txt","rees");
 }
 if($text && $text != '/start' && $step == 'rees'){
-$t=$admins[$text]["end"];
-$c=$admins[$text]["time"];
+$target_id = trim($text);
+if (admin_emile_by_id($target_id) == null) {
+    bot('sendMessage',['chat_id'=>$chat_id,'text'=>'⛔️ - Telegram ID غير موجود أو غير صحيح']);
+    unlink("data/id/$id/step.txt");
+    exit;
+}
+$t=$admins[$target_id]["end"];
+$c=$admins[$target_id]["time"];
 $v=$t-(time() - $c);
-if($admins[$text]["check"] != null and time() - $c < $t){
+if($admins[$target_id]["check"] != null and time() - $c < $t){
 $Before = "☑️ - مالك هذا الحساب تم تقييدة من سابق لمده *$t ثانية* ✅
 ⏰ - متبقى له: *$v ثانية*
 ";
 }
 $second=3600;
-if($EMILS['emils'][$text]['emil'] == null){
+if(admin_emile_by_id($target_id) == null){
 bot('sendMessage',[
 'chat_id'=>$chat_id,
 'text'=>"
-⛔️ - عذرا مطوري هذا الإيميل او الأيدي محذوف أو ليس صحيح
+⛔️ - عذرًا، Telegram ID غير موجود أو ليس صحيحًا
 ",
 'reply_to_message_id'=>$message_id,
 'parse_mode'=>"MarkDown",
@@ -9453,7 +9534,7 @@ bot('sendMessage',[
 bot('sendMessage',[
 'chat_id'=>$chat_id,
 'text'=>"
-☑️ *- أكتب الوقت الذي تريد تقييد* مالك الحساب *[$text]* ⏰
+☑️ *- أكتب الوقت الذي تريد تقييد* مالك الحساب *[$target_id]* ⏰
 $Before
 ",
 'parse_mode'=>"MarkDown",
@@ -9475,8 +9556,9 @@ unlink("data/id/$id/step.txt");
 }
 }
 if($exdata[0] == "rees"){
-$idEM=$exdata[1];
-$reo = $EMILS['emils'][$idEM]['id'];
+$idEM=trim($exdata[1]);
+$reo = $idEM;
+if (admin_emile_by_id($idEM) == null) { unlink("data/id/$id/step.txt"); exit; }
 $second=$exdata[2];
 if($second <= 0 or $second == null or $second == 0 or $second === 0){
 unlink("data/id/$id/step.txt");
@@ -9575,7 +9657,7 @@ bot('EditMessageText',[
 'chat_id'=>$chat_id,
 'message_id'=>$message_id,
 'text'=>'
-☑️ - ارسل الحساب (الإيميل) الذي تريد فك تقييده في البوت ♻️
+☑️ - أرسل Telegram ID للمستخدم الذي تريد فك تقييده في البوت ♻️
 ',
 'reply_markup'=>json_encode([ 
 'inline_keyboard'=>[
@@ -9586,12 +9668,13 @@ bot('EditMessageText',[
 file_put_contents("data/id/$id/step.txt","unres");
 }
 if($text && $text != '/start' && $step == 'unres'){
-$reo = $EMILS['emils'][$text]['id'];
-if($EMILS['emils'][$text]['emil'] == null){
+$target_id = trim($text);
+$reo = $target_id;
+if(admin_emile_by_id($target_id) == null){
 bot('sendMessage',[
 'chat_id'=>$chat_id,
 'text'=>"
-⛔️ - عذرا مطوري هذا الإيميل او الأيدي محذوف أو ليس صحيح
+⛔️ - عذرًا، Telegram ID غير موجود أو ليس صحيحًا
 ",
 'reply_to_message_id'=>$message_id,
 'parse_mode'=>"MarkDown",
@@ -9601,7 +9684,7 @@ bot('sendMessage',[
 ]
 ])
 ]);
-}elseif($admins[$text]["check"] == null){
+}elseif($admins[$target_id]["check"] == null){
 bot('sendMessage',[
 'chat_id'=>$chat_id,
 'text'=>"
@@ -9620,7 +9703,7 @@ unlink("data/id/$id/step.txt");
 bot('sendMessage',[
 'chat_id'=>$chat_id,
 'text'=>"
-☑️ - تم فك تقييد الحساب *[$text]* في البوت بنجاح 🌟
+☑️ - تم فك تقييد الحساب *[$target_id]* في البوت بنجاح 🌟
   ",
 'reply_to_message_id'=>$message_id,
 'parse_mode'=>"MarkDown",
@@ -9642,7 +9725,7 @@ bot('sendMessage',[
 ]
 ])
 ]);
-unset($admins[$text]);
+unset($admins[$target_id]);
 Admins($admins);
 unlink("data/id/$id/step.txt");
 }
@@ -9652,7 +9735,7 @@ if($text == 'zero'){
 bot('sendMessage',[
 'chat_id'=>$chat_id,
 'text'=>'
-⚠️ - أرسل حساب الزبون الذي تريد تصفير حسابه 🔰
+⚠️ - أرسل Telegram ID للمستخدم الذي تريد تصفير حسابه 🔰
 ',
 'reply_to_message_id'=>$message_id,
 'reply_markup'=>json_encode([ 
@@ -9664,13 +9747,15 @@ bot('sendMessage',[
 file_put_contents("data/id/$id/step.txt","zero");
 }
 if($text && $text != '/start' && $step == 'zero'){
-$reo = $EMILS['emils'][$text]['id'];
-$pri=file_get_contents("EMILS/$text/points.txt");
-if($EMILS['emils'][$text]['emil'] == null){
+$target_id = trim($text);
+$emile = admin_emile_by_id($target_id);
+$reo = $target_id;
+$pri = ($emile != null) ? file_get_contents("EMILS/$emile/points.txt") : 0;
+if($emile == null){
 bot('sendMessage',[
 'chat_id'=>$chat_id,
 'text'=>"
-⛔️ - عذرا مطوري هذا الإيميل محذوف أو ليس صحيح
+⛔️ - عذرًا، Telegram ID غير موجود أو ليس صحيحًا
 ",
 'reply_to_message_id'=>$message_id,
 'reply_markup'=>json_encode([
@@ -9684,7 +9769,7 @@ bot('sendMessage',[
 'chat_id'=>$chat_id,
 'text'=>"
 ☑️ - تم تصفير حساب العضو بنحاح
-🌐 - الحساب : $text
+🆔 - Telegram ID : $target_id
 🆔 - ايدية : [$reo](tg://user?id=$reo)
 ",
 'parse_mode'=>"MarkDown",
@@ -9696,8 +9781,8 @@ bot('sendMessage',[
 ])
 ]);
 unlink("data/id/$id/step.txt");
-unlink("EMILS/$text/points.txt");
-$rubles = file_get_contents("EMILS/$text/rubles.txt");
+unlink("EMILS/$emile/points.txt");
+$rubles = file_get_contents("EMILS/$emile/rubles.txt");
 $ds = $rubles - $pri;
 file_put_contents("EMILS/$text/rubles.txt",$ds);
 $rubleall = file_get_contents("data/txt/rubleall.txt");

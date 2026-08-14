@@ -11,44 +11,163 @@ $allsms=$_GET["allsms"];
 include("name.php");
 $APPS = json_decode(file_get_contents("data/api/apps.json"),true);
 
-// تكامل NumberPanel: يدعم استدعاء action=getNum أو action=requestNumber مع site=numberpanel
-if ($site === 'numberpanel' && in_array($_GET['action'] ?? '', ['getNum', 'requestNumber'], true)) {
+// تكامل NumberPanel: توحيد دورة شراء الرقم وفحص OTP والتحرير مع بقية المواقع.
+if ($site === 'numberpanel') {
     $numberpanel_token = 'np_live_8rL4kJ2A0W0r_mXsGyHHW4hra75IrlQIsIz2yAnqECM';
-
-    $service = $app ?: 'WhatsApp';
-    $service = str_replace(['wa', 'whatsapp'], 'WhatsApp', strtolower($service));
-    $payload = json_encode([
-        'service' => $service,
-        'country' => $country ?: 'Indonesia'
-    ], JSON_UNESCAPED_UNICODE);
-
-    $ch = curl_init('https://numberpanel.tech/api/request_number');
-    curl_setopt_array($ch, [
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_POST => true,
-        CURLOPT_POSTFIELDS => $payload,
-        CURLOPT_HTTPHEADER => [
-            'Authorization: Bearer ' . $numberpanel_token,
-            'Content-Type: application/json',
-            'Accept: application/json'
-        ],
-        CURLOPT_TIMEOUT => 30
-    ]);
-    $numberpanel_response = curl_exec($ch);
-    $numberpanel_error = curl_error($ch);
-    $numberpanel_http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    curl_close($ch);
-
-    if ($numberpanel_response === false) {
-        http_response_code(502);
-        echo json_encode(['ok' => false, 'error' => $numberpanel_error], JSON_UNESCAPED_UNICODE);
-    } else {
-        http_response_code($numberpanel_http_code ?: 200);
-        echo $numberpanel_response;
+    $numberpanel_action = $_GET['action'] ?? '';
+    $numberpanel_service_map = [
+        'wa' => 'whatsapp', 'tg' => 'telegram', 'fb' => 'facebook',
+        'ig' => 'instagram', 'tw' => 'twitter', 'lf' => 'tiktok',
+        'go' => 'google', 'im' => 'imo', 'vi' => 'viber', 'nf' => 'netflix'
+    ];
+    $numberpanel_service = $numberpanel_service_map[strtolower((string)$app)] ?? strtolower((string)($app ?: 'whatsapp'));
+    $numberpanel_country = trim((string)($o_co['country'][$country] ?? $country));
+    if ($numberpanel_country === '' || is_numeric($numberpanel_country)) {
+        $numberpanel_country = 'random';
     }
-    exit;
-}
 
+    $numberpanel_call = function (string $method, string $path, ?array $body = null) use ($numberpanel_token) {
+        $ch = curl_init('https://numberpanel.tech' . $path);
+        $options = [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CUSTOMREQUEST => $method,
+            CURLOPT_HTTPHEADER => [
+                'Authorization: Bearer ' . $numberpanel_token,
+                'Content-Type: application/json',
+                'Accept: application/json'
+            ],
+            CURLOPT_TIMEOUT => 30
+        ];
+        if ($body !== null) {
+            $options[CURLOPT_POSTFIELDS] = json_encode($body, JSON_UNESCAPED_UNICODE);
+        }
+        curl_setopt_array($ch, $options);
+        $raw = curl_exec($ch);
+        $error = curl_error($ch);
+        $http = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        $decoded = is_string($raw) ? json_decode($raw, true) : null;
+        return ['http' => $http, 'raw' => $raw, 'json' => is_array($decoded) ? $decoded : [], 'error' => $error];
+    };
+
+    $numberpanel_find = function ($value, array $keys) use (&$numberpanel_find) {
+        if (!is_array($value)) return null;
+        foreach ($keys as $key) {
+            if (array_key_exists($key, $value) && !is_array($value[$key])) return $value[$key];
+        }
+        foreach ($value as $child) {
+            $found = $numberpanel_find($child, $keys);
+            if ($found !== null && $found !== '') return $found;
+        }
+        return null;
+    };
+
+    // عمليات NumberPanel الإضافية، بنفس نمط action المستخدم مع بقية الموردين.
+    if ($numberpanel_action === 'getServices') {
+        $response = $numberpanel_call('GET', '/api/services');
+        echo json_encode($response['json'], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+    if ($numberpanel_action === 'getCountries') {
+        $service_query = rawurlencode($numberpanel_service);
+        $response = $numberpanel_call('GET', '/api/countries?service=' . $service_query);
+        echo json_encode($response['json'], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+    if ($numberpanel_action === 'getNumbers') {
+        $response = $numberpanel_call('GET', '/api/my_numbers');
+        echo json_encode($response['json'], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+    if ($numberpanel_action === 'getOtps') {
+        $limit = max(1, min(100, (int)($_GET['limit'] ?? 10)));
+        $response = $numberpanel_call('GET', '/api/my_otps?limit=' . $limit);
+        echo json_encode($response['json'], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+    if ($numberpanel_action === 'getLatestOtp') {
+        $response = $numberpanel_call('GET', '/api/latest_otp?number=' . rawurlencode($number));
+        echo json_encode($response['json'], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+
+    if ($numberpanel_action === 'getOtpFeed') {
+        $count = max(1, min(100, (int)($_GET['count'] ?? 10)));
+        $response = $numberpanel_call('GET', '/api/otp?count=' . $count);
+        echo json_encode($response['json'], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+    if ($numberpanel_action === 'generateMail') {
+        $username = trim((string)($_GET['username'] ?? 'demo'));
+        $response = $numberpanel_call('POST', '/api/mail/generate', ['username' => $username]);
+        echo json_encode($response['json'], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+    if ($numberpanel_action === 'getMailHistory') {
+        $response = $numberpanel_call('GET', '/api/mail/history');
+        echo json_encode($response['json'], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+    if ($numberpanel_action === 'getMailDomains') {
+        $response = $numberpanel_call('GET', '/api/mail/domains');
+        echo json_encode($response['json'], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+
+    if ($numberpanel_action === 'getPrice') {
+        $configured_price = (float)($APPS['numberpanel']['price'] ?? 0);
+        if ($configured_price <= 0 && is_file('data/api/numberpanel_price.txt')) {
+            $configured_price = (float)trim((string)file_get_contents('data/api/numberpanel_price.txt'));
+        }
+        $services = $numberpanel_call('GET', '/api/services');
+        $available = $services['http'] >= 200 && $services['http'] < 300 ? 1 : 0;
+        echo json_encode([
+            'status' => $available ? 200 : 0,
+            'price' => $configured_price,
+            'add' => $available,
+            'Location' => 'numberpanel.tech',
+            'message' => $available ? 'NumberPanel is available' : 'NumberPanel is unavailable'
+        ], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+
+    if (in_array($numberpanel_action, ['getNum', 'requestNumber'], true)) {
+        $response = $numberpanel_call('POST', '/api/request_number', [
+            'service' => $numberpanel_service,
+            'country' => $numberpanel_country
+        ]);
+        $payload = $response['json'];
+        $numberpanel_id = $numberpanel_find($payload, ['id', 'order_id', 'orderId', 'activation_id', 'request_id']);
+        $numberpanel_number = $numberpanel_find($payload, ['number', 'phone', 'phone_number']);
+        $ok = $response['http'] >= 200 && $response['http'] < 300 && $numberpanel_id && $numberpanel_number;
+        if ($ok) {
+            $numberpanel_number = '+' . ltrim((string)$numberpanel_number, '+');
+            echo json_encode(['status' => 200, 'message' => 'Number fetched successfully', 'number' => $numberpanel_number, 'idnumber' => (string)$numberpanel_id, 'time' => 1200, 'Location' => 'numberpanel.tech'], JSON_UNESCAPED_UNICODE);
+        } else {
+            echo json_encode(['status' => 0, 'message' => $payload['message'] ?? 'NumberPanel could not provide a number', 'Location' => 'numberpanel.tech'], JSON_UNESCAPED_UNICODE);
+        }
+        exit;
+    }
+
+    if ($numberpanel_action === 'getStatus') {
+        $response = $numberpanel_call('GET', '/api/latest_otp?number=' . rawurlencode($number));
+        $code = $numberpanel_find($response['json'], ['code', 'otp', 'latest_otp', 'sms']);
+        if (is_array($code)) $code = $numberpanel_find($code, ['code', 'otp']);
+        if ($code !== null && $code !== '') {
+            echo json_encode(['status' => 200, 'message' => 'Verification code has been received', 'code' => str_replace('-', '', (string)$code), 'agen' => 1, 'Location' => 'numberpanel.tech'], JSON_UNESCAPED_UNICODE);
+        } else {
+            echo json_encode(['status' => 0, 'message' => 'Provider verification code not received', 'Location' => 'numberpanel.tech'], JSON_UNESCAPED_UNICODE);
+        }
+        exit;
+    }
+
+    if (in_array($numberpanel_action, ['setStatus', 'addBlack'], true)) {
+        $response = $numberpanel_call('POST', '/api/release_number', ['number' => $number]);
+        $ok = $response['http'] >= 200 && $response['http'] < 300;
+        echo json_encode(['status' => $ok ? 200 : 0, 'message' => $ok ? 'The number has been released from the provider' : 'The number could not be released from the provider', 'Location' => 'numberpanel.tech'], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+}
 #________ALL
 $api_key = $APPS[$site][api_key];
 $Username = $APPS[$site][Username];

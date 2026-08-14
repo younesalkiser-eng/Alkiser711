@@ -1,5 +1,4 @@
 <?php
-error_reporting(E_ERROR | E_PARSE);
 
 // By @v_9_k_e
 
@@ -20,20 +19,6 @@ $required_files = [
     'data/storenumber.json', 'data/id/admin.json', 'data/txt/random.json', 
     'assignment/addem.json', 'assignment/addid.json', 'data/api/apps.json'
 ];
-// مصفوفة بالملفات الجديدة المفقودة لتجهيزها تلقائياً
-$extra_files = [
-    'data/txt/rubleall.txt', 'data/txt/pointall.txt',
-    'EMILS/number.json', 'EMILS/send.json', 'EMILS/card.json', 'EMILS/price.json',
-    'data/id/restriction.txt', 'data/id/step.txt', 'data/id/twas.txt', 'data/id/number.txt'
-];
-
-foreach ($extra_files as $file) {
-    if (!file_exists($file)) {
-        // إذا كان ملف json نضع مصفوفة فارغة، وإذا كان txt نتركه فارغاً
-        $content = (pathinfo($file, PATHINFO_EXTENSION) === 'json') ? json_encode([]) : '';
-        file_put_contents($file, $content);
-    }
-}
 
 foreach ($required_files as $file) {
     if (!file_exists($file)) {
@@ -167,28 +152,29 @@ $assignment = json_decode(file_get_contents('assignment/addem.json'),true);
 $assignment2 = json_decode(file_get_contents('assignment/addid.json'),true);
 $APPS = json_decode(file_get_contents('data/api/apps.json'),true);
 
-// تسجيل تلقائي للمستخدم عبر Telegram ID بدلاً من طلب البريد وكلمة المرور
-if (empty($EMIL[$chat_id]['emil']) || empty($EMILS['emils'][$EMIL[$chat_id]['emil']]['emil'])) {
-    do {
-        $auto_emil = 'user_' . $chat_id . '_' . substr(md5(uniqid('', true)), 0, 6);
-    } while (isset($EMILS['emils'][$auto_emil]));
-    $auto_pass = bin2hex(random_bytes(8));
-    $now_date = date('d/m/Y H:i:s');
-    $EMIL[$chat_id] = ['emil' => $auto_emil, 'pass' => $auto_pass, 'Date_created' => $now_date];
-    $EMILS['emils'][$auto_emil] = ['emil' => $auto_emil, 'pass' => $auto_pass, 'Date_created' => $now_date, 'id' => $chat_id];
+// إنشاء حساب داخلي تلقائيًا وربطه مباشرةً بـ Telegram ID، دون تسجيل دخول يدوي.
+if (!isset($chat_id) || $chat_id === null) {
+    $chat_id = $id ?? null;
+}
+if ($chat_id !== null && (!isset($EMIL[$chat_id]['emil']) || $EMIL[$chat_id]['emil'] === null || $EMIL[$chat_id]['emil'] === '')) {
+    $auto_account = 'tg_' . (string)$chat_id;
+    $auto_password = bin2hex(random_bytes(8));
+    $EMIL[$chat_id]['emil'] = $auto_account;
+    $EMIL[$chat_id]['pass'] = $auto_password;
+    $EMIL[$chat_id]['Date_created'] = date('d/m/Y H:i:s');
+    $EMILS['emils'][$auto_account]['emil'] = $auto_account;
+    $EMILS['emils'][$auto_account]['pass'] = $auto_password;
+    $EMILS['emils'][$auto_account]['id'] = $chat_id;
+    $EMILS['emils'][$auto_account]['Date_created'] = date('d/m/Y H:i:s');
+    if (!is_dir("EMILS/$auto_account")) { mkdir("EMILS/$auto_account", 0777, true); }
+    foreach (['number.json'=>[], 'send.json'=>[], 'card.json'=>[], 'price.json'=>[], 'points.txt'=>'0', 'rubles.txt'=>'0'] as $auto_file => $auto_default) {
+        $auto_path = "EMILS/$auto_account/$auto_file";
+        if (!file_exists($auto_path)) {
+            file_put_contents($auto_path, str_ends_with($auto_file, '.json') ? json_encode($auto_default) : $auto_default);
+        }
+    }
     Aemil($EMIL);
     Bemil($EMILS);
-    $auto_dir = "EMILS/$auto_emil";
-    if (!is_dir($auto_dir)) mkdir($auto_dir, 0777, true);
-    foreach (['number.json' => [], 'send.json' => [], 'card.json' => [], 'price.json' => []] as $auto_file => $auto_default) {
-        if (!file_exists("$auto_dir/$auto_file")) file_put_contents("$auto_dir/$auto_file", json_encode($auto_default));
-    }
-    foreach (['rubles.txt', 'points.txt'] as $auto_file) {
-        if (!file_exists("$auto_dir/$auto_file")) file_put_contents("$auto_dir/$auto_file", '0');
-    }
-    $EMILNow['emil'][$chat_id] = $auto_emil;
-    $EMILNow['password'][$chat_id] = $auto_pass;
-    Now($EMILNow);
 }
 #============={أوامر إضافية}===========#
 $me = bot('getme',['bot'])->result->username;
@@ -210,12 +196,7 @@ $cardbot = $ORDERALL['card']; #عدد الكروت المباعة#
 $sendbot = $ORDERALL['send']; #عدد عمليات التحويل#
 $money2 = file_get_contents("data/txt/rubleall.txt"); #الروبل اللكلي#
 $poi_money = file_get_contents("data/txt/pointall.txt"); #الروبل المتبقي#
-// تحويل المتغيرات إلى أرقام قسرياً لمنع خطأ الطرح الحسابي للنصوص
-$money2_numeric = (float)$money2;
-$poi_money_numeric = (float)$poi_money;
-
-$money = $money2_numeric - $poi_money_numeric; #الروبل المستهلك#
-
+$money = $money2 - $poi_money; #الروبل المستهلك#
 $allcharges = $ORDERALL['add']; #عدد الشحن ب المرات#
 $assignru=0.25; #نسبة ربح رابط الدعوة#
 $Exchange=60; #سعر الدولار#
@@ -242,20 +223,15 @@ $Detector = file_get_contents("data/id/$id/restriction.txt");
 $step = file_get_contents("data/id/$id/step.txt");
 $twas = file_get_contents("data/id/$id/twas.txt");
 $buynumber = file_get_contents("data/id/$id/number.txt");
-$exstep   = (!empty($step)) ? explode("|", $step) : [];
-$extext   = (!empty($text)) ? explode("\n", $text) : [];
-$ex_text  = (!empty($text)) ? explode(" ", $text) : [];
-$ex__text = (!empty($text)) ? explode("-", $text) : [];
-$exdata   = (!empty($data)) ? explode("-", $data) : [];
-$ex_data  = (!empty($data)) ? explode("#", $data) : [];
-
-// تعديل السطر 226 لحماية دالة count من الـ null
-$ordermy = (isset($BUYSNUM['number']) && is_array($BUYSNUM['number'])) ? count($BUYSNUM['number']) : 0; #عدد الأرقام المشترى#
-
-// تعديل السطر الخاص بـ number_my وإضافة علامات التنصيص
-$numbuy = (isset($BUYSNUM['number_my'])) ? $BUYSNUM['number_my'] : 0; #عدد الأرقام المشترى#
-
-$readymy = $BUYSNUM['ready_my']; #عدد الأرقام الجاهزة#
+$exstep=explode("|", $step);
+$extext = explode("\n", $text);
+$ex_text=explode(" ", $text);
+$ex__text=explode("-", $text);
+$exdata=explode("-", $data);
+$ex_data=explode("#", $data);
+$ordermy = count($BUYSNUM[number]); #عدد الأرقام المشترى#
+$numbuy = $BUYSNUM[number_my]; #عدد الأرقام المشترى#
+$readymy = $BUYSNUM[ready_my]; #عدد الأرقام الجاهزة#
 $orderall = count($ORDERALL)+1; #عدد مشتريات الاعضاء#
 $idnums = count($ORDERALL)+999999999; #عدد مشتريات الاعضاء#
 $cardmy = count($BUYSCARD); #عدد الكروت المشترى#
@@ -411,7 +387,7 @@ bot('sendMessage',[
 
 - يجب الإشتراك بقناة البوت الرسمية لإستخدام البوت 📢
 
-*- رابط القناة: @you_k711 @$chall*
+*- رابط القناة: @pilotoooo @$chall*
 
 🙋‍♂️ *⁞ إضغط على الزر بالأسفل للتحقق.*
 ",
@@ -492,6 +468,41 @@ $dlls = $rubleall + $assignru;
 file_put_contents("data/txt/rubleall.txt",$dlls);
 unlink("data/id/$id/lift.txt");
 }
+if($text == '/start' && $id != $sudo){
+$account_name = $EM ?: ('tg_' . (string)$id);
+bot('sendMessage',[
+'chat_id'=>$chat_id,
+'text'=>"
+👨‍✈️ *⁞ مرحبا بك* [$first](tg://user?id=$id) ؛
+🏛 *⁞ هذه تفاصيل حسابك في البوت* ⬇️
+
+📨︙حسابك: *$account_name*
+💰︙رصيدك: *₽ $Balance 💸*
+🆔︙أيدي حسابك: *$id ⚜*
+♻️︙رصيدك المصرف: *$consumers 🗞*
+
+☑️ *⁞ قناة البوت الرسمية: @$chall
+🎬︙قم بالتحكم بالبوت الآن عبر الضغط على الأزرار.*
+",
+'parse_mode'=>"MarkDown",
+'disable_web_page_preview'=>true,
+'reply_to_message_id'=>$message_id,
+'reply_markup'=>json_encode([
+'inline_keyboard'=>[
+[['text'=>'☎️︙شراء ارقـام وهمية','callback_data'=>'Buynum']],
+[['text'=>'💰︙شحن رصيدك','callback_data'=>'Payment'],['text'=>'👤︙قسم الرشق','callback_data'=>'sh']],
+[['text'=>'🅿️︙كشف الحساب','callback_data'=>"Record"],['text'=>'🛍︙قسم العروض','callback_data'=>"Wo"]],
+[['text'=>'☑️︙قسم العشوائي','callback_data'=>"worldwide"],['text'=>'👑︙قسم الملكي','callback_data'=>"saavmotamy"]],
+[['text'=>'💰︙ربح روبل مجاني 🤑','callback_data'=>"assignment"]],
+[['text'=>'💳︙متجر الكروت','callback_data'=>"readycard-10"],['text'=>'🔰︙الارقام الجاهزة','callback_data'=>'ready']],
+[['text'=>'👨‍💻︙قسم الوكلاء','callback_data'=>"gents"],['text'=>'⚙︙إعدادات البوت','callback_data'=>"MyAccount"]],
+[['text'=>'📮︙تواصل الدعم أونلاين','callback_data'=>"super"]]
+]
+])
+]);
+unlink("data/id/$id/step.txt");
+exit;
+}
 if($ex_text[0] == '/start' and $ex_text[1] != 'ONE' and $id !== $sudo){
 $cod=$ex_text[1];
 $EEM=$assignment["emils"][$cod];
@@ -501,17 +512,15 @@ bot('sendMessage',[
 'text'=>"
 ♐️ - مرحبا بك [$first](tg://user?id=$id) ؛ 🤍
 
-*- في بوت @you_k711* ؛ البوت الأفضل على التليجرام والذي يقوم بتوفير *خدمات الأرقام الوهمية* ل مواقع السوشيال ميديا مثل *التيليجرام والواتساب والتويتر وغيره* 👾
+*- في بوت @pilotoooo* ؛ البوت الأفضل على التليجرام والذي يقوم بتوفير *خدمات الأرقام الوهمية* ل مواقع السوشيال ميديا مثل *التيليجرام والواتساب والتويتر وغيره* 👾
 
-*- تم تسجيل دخولك تلقائيًا، ويمكنك استخدام البوت مباشرةً. ☑️*
+*- تم إنشاء حسابك تلقائيًا وربطه بأيدي Telegram الخاص بك. يمكنك استخدام البوت مباشرةً. ☑️
 ",
 'parse_mode'=>"MarkDown",
 'disable_web_page_preview'=>true,
 'reply_to_message_id'=>$message_id,
 'reply_markup'=>json_encode([
 'inline_keyboard'=>[
-
-
 [['text'=>'شروط الإستخدام وإخلاء للمسؤلية 🚨','callback_data'=>"to_explain"]],
 [["text"=>'إدارة البوت 👨🏻‍💻',"url"=>"tg://user?id=$sudo"]],
 [['text'=>'هام للأعضاء الجُدد ⚠️','callback_data'=>"Important"]],
@@ -556,17 +565,15 @@ bot('sendMessage',[
 'text'=>"
 ♐️ - مرحبا بك [$first](tg://user?id=$id) ؛ 🤍
 
-*- في بوت @you_k711* ؛ البوت الأفضل على التليجرام والذي يقوم بتوفير *خدمات الأرقام الوهمية* ل مواقع السوشيال ميديا مثل *التيليجرام والواتساب والتويتر وغيره* 👾
+*- في بوت @pilotoooo* ؛ البوت الأفضل على التليجرام والذي يقوم بتوفير *خدمات الأرقام الوهمية* ل مواقع السوشيال ميديا مثل *التيليجرام والواتساب والتويتر وغيره* 👾
 
-*- تم تسجيل دخولك تلقائيًا، ويمكنك استخدام البوت مباشرةً. ☑️*
+*- تم إنشاء حسابك تلقائيًا وربطه بأيدي Telegram الخاص بك. يمكنك استخدام البوت مباشرةً. ☑️
 ",
 'parse_mode'=>"MarkDown",
 'disable_web_page_preview'=>true,
 'reply_to_message_id'=>$message_id,
 'reply_markup'=>json_encode([
 'inline_keyboard'=>[
-
-
 [['text'=>'شروط الإستخدام وإخلاء للمسؤلية 🚨','callback_data'=>"to_explain"]],
 [["text"=>'إدارة البوت 👨🏻‍💻',"url"=>"tg://user?id=$sudo"]],
 [['text'=>'هام للأعضاء الجُدد ⚠️','callback_data'=>"Important"]],
@@ -585,16 +592,14 @@ bot('EditMessageText',[
 'text'=>"
 ♐️ - مرحبا بك [$first](tg://user?id=$id) ؛ 🤍
 
-*- في بوت @you_k711* ؛ البوت الأفضل على التليجرام والذي يقوم بتوفير *خدمات الأرقام الوهمية* ل مواقع السوشيال ميديا مثل *التيليجرام والواتساب والتويتر وغيره* 👾
+*- في بوت @pilotoooo* ؛ البوت الأفضل على التليجرام والذي يقوم بتوفير *خدمات الأرقام الوهمية* ل مواقع السوشيال ميديا مثل *التيليجرام والواتساب والتويتر وغيره* 👾
 
-*- تم تسجيل دخولك تلقائيًا، ويمكنك استخدام البوت مباشرةً. ☑️*
+*- تم إنشاء حسابك تلقائيًا وربطه بأيدي Telegram الخاص بك. يمكنك استخدام البوت مباشرةً. ☑️
 ",
 'parse_mode'=>"MarkDown",
 'disable_web_page_preview'=>true,
 'reply_markup'=>json_encode([
 'inline_keyboard'=>[
-
-
 [['text'=>'شروط الإستخدام وإخلاء للمسؤلية 🚨','callback_data'=>"to_explain"]],
 [["text"=>'إدارة البوت 👨🏻‍💻',"url"=>"tg://user?id=$sudo"]],
 [['text'=>'هام للأعضاء الجُدد ⚠️','callback_data'=>"Important"]],
@@ -607,7 +612,7 @@ exit;
 }
 #=========={الحماية}==========#
 if($Detector != null){
-if($exdata[0] == "Ii" or $exdata[0] == "Xi" or $exdata[0] == "Wi" or $ex_data[0] == "readdd" or $exdata[0] == "Vi" or $data == "YESSend" or $exdata[0] == "YSb" or $data == "login" or $data == "login_2" or $data == "logout" or $data == "sign_in"){
+if($exdata[0] == "Ii" or $exdata[0] == "Xi" or $exdata[0] == "Wi" or $ex_data[0] == "readdd" or $exdata[0] == "Vi" or $data == "YESSend" or $exdata[0] == "YSb"){
 $site = $BUYSNUM[number][$Detector][site];
 $number = $BUYSNUM[number][$Detector][phone];
 $idnumber = $BUYSNUM[number][$Detector][idnumber];
@@ -653,269 +658,8 @@ unlink("data/id/$id/restriction.txt");
 }
 }
 }
-#=========={تسجيل الدخول}==========#
-if(false && $data == "login"){
-$emile = $EMIL[$chat_id]['emil'];
-$password = $EMILS['emils'][$emile]['pass'];
-bot('EditMessageText',[
-'chat_id'=>$chat_id,
-'message_id'=>$message_id,
-'text'=>"
-*♻️ - يرجى إرسال الحساب او الإيميل الذي تريد تسجيل الدخول عليه ، (يجب أن يكون هذا الإيميل مسجل بالبوت. ⚠️)
-
-☑️ - اذا لديك حساب من قبل سيضهر في الأسفل ، إضغط عليه لتسجيل الدخول ✅.*
-",
-'parse_mode'=>"MarkDown",
-'reply_markup'=>json_encode([
-'inline_keyboard'=>[
-[['text'=>"- $emile .",'callback_data'=>"emils-$emile-$password"]],
-[['text'=>'- رجوع.','callback_data'=>"startup"]]
-]
-])
-]);
-file_put_contents("data/id/$id/step.txt","login");
-exit;
-}
-if($text != '/start' && $text != null && $step == 'login'){
-$pass=$EMILS['emils'][$text]['pass'];
-$IDem=$EMILS['emils'][$text]['id'];
-if($EMILS['emils'][$text]['emil'] == null){
-bot('sendMessage',[
-'chat_id'=>$chat_id,
-'text'=>"
-⚠️ *- لم يتم إنشاء حساب ب هذا الإيميل في البوت!*
-",
-'parse_mode'=>"MarkDown",
-'reply_to_message_id'=>$message_id,
-'reply_markup'=>json_encode([
-'inline_keyboard'=>[
-[['text'=>"↪️ إنشاء حساب جديد ☑️",'callback_data'=>"sign_in"]],
-[['text'=>'- رجوع.','callback_data'=>"startup"]]
-]
-])
-]);
-exit;
-}
-bot('sendMessage',[
-'chat_id'=>$chat_id,
-'text'=>"
-☑️ *- يرجى الإنتظار يتم فحص الحساب ⏳...*
-",
-'parse_mode'=>"MarkDown",
-'reply_to_message_id'=>$message_id,
-]);
-sleep(1);
-bot('sendMessage',[
-'chat_id'=>$chat_id,
-'text'=>"
-🔐 *- أرسل كلمة مرور حسابك الأن* ☑️
-",
-'parse_mode'=>"MarkDown",
-'reply_to_message_id'=>$message_id,
-'reply_markup'=>json_encode([
-'inline_keyboard'=>[
-[['text'=>"⚠️ - طلب المساعدة",'callback_data'=>"super"]],
-[['text'=>'- رجوع.','callback_data'=>"startup"]]
-]
-])
-]);
-file_put_contents("data/id/$id/step.txt","pasword|$text");
-exit;
-}
-if($text != '/start' && $text != null && $exstep[0] == 'pasword'){
-$emile = $exstep[1];
-$passe = $EMILS['emils'][$emile]['pass'];
-if($text !== $passe){
-bot('sendMessage',[
-'chat_id'=>$chat_id,
-'text'=>"
-*♻️ - كلمة المرور ليست صحيحة ⛔️*
-",
-'parse_mode'=>"MarkDown",
-'reply_to_message_id'=>$message_id,
-'reply_markup'=>json_encode([
-'inline_keyboard'=>[
-[['text'=>'- رجوع.','callback_data'=>"startup"]]
-]
-])
-]);
-unlink("data/id/$id/step.txt");
-exit;
-}
-$get=bot('sendMessage',[
-'chat_id'=>$chat_id,
-'text'=>"
-♻️ *- تم التحقق بنجاح، انتظر قليلا ....*
-",
-'parse_mode'=>"MarkDown",
-'reply_to_message_id'=>$message_id,
-]);
-sleep(1);
-$get=$get->result->message_id;
-bot('deletemessage',[
-'chat_id'=>$chat_id, 
-'message_id'=>$get,
-]);
-bot('sendMessage',[
-'chat_id'=>$chat_id,
-'text'=>"
-⤵️ *- يمكنك الآن الضغط على الإيميل بالأسفل للتسجيل* ☑️
-",
-'parse_mode'=>"MarkDown",
-'reply_to_message_id'=>$message_id,
-'reply_markup'=>json_encode([
-'inline_keyboard'=>[
-[['text'=>"$emile",'callback_data'=>"emils-$emile-$passe"]]
-]
-])
-]);
-unlink("data/id/$id/step.txt");
-exit;
-}
-#=========={إنشاء حساب}=========#
-if(false && $data == "sign_in"){
-$margin=rand(100000,999999);
-if($EMIL[$chat_id]['emil'] != null){
-bot('answercallbackquery',[
-'callback_query_id' => $update->callback_query->id,
-'text'=>"
-☑️ - يوجد لديك حساب من قبل ⚠️
-",
-'show_alert'=>true
-]);
-unlink("data/id/$id/step.txt");
-exit;
-}
-bot('EditMessageText',[
-'chat_id'=>$chat_id,
-'message_id'=>$message_id,
-'text'=>"
-✅ - لأمان حسابك *وحماية خصوصيتك*، نحتاج للتحقق من *انك انساناً ولست روبوتاً* اولاً. ♻️
-
-🔘 - قم بكتابة الرقم الظاهر أمامك *[ $margin ]* 
-
-☑️ - أرسل لنا *الإجابة الصحيحة* للتحقق من *انك لست روبوتاً.*
-",
-'parse_mode'=>"MarkDown",
-'reply_markup'=>json_encode([
-'inline_keyboard'=>[
-[['text'=>'- رجوع 🔜','callback_data'=>"startup"]]
-]
-])
-]);
-file_put_contents("data/id/$id/step.txt","sign_in|$margin");
-exit;
-}
-if($text != '/start' && $text != null && $exstep[0] == 'sign_in'){
-$margin = $exstep[1];
-$xzz = "@you_k711.COM";
-$code = substr(str_shuffle("abcdefghijklmnopqrstuvwxyz"),0-7);
-$emile = "$code$xzz";
-$password = substr(str_shuffle("12345"),0-5);
-if($user == null){
-$uss = "لايوجد ❌";
-}else{
-$uss = "[@$user]";
-}
-if($EMILS['emils'][$emile]['emil'] == $emile){
-bot('sendMessage',[
-'chat_id'=>$chat_id,
-'text'=>"
-*❌ -  عذرا عزيزي حدث خطأ في البوت أرجوا إعادة المحاولة مرة أخرى 🙃*
-",
-'parse_mode'=>"MarkDown",
-'reply_to_message_id'=>$message_id,
-'reply_markup'=>json_encode([
-'inline_keyboard'=>[
-[['text'=>'- رجوع 🔙','callback_data'=>"startup"]]
-]
-])
-]);
-unlink("data/id/$id/step.txt");
-exit;
-}
-if($margin != $text){
-bot('sendMessage',[
-'chat_id'=>$chat_id,
-'text'=>"
-*❌ - إجابة غير صحيحة! حاول مجددا.*
-",
-'parse_mode'=>"MarkDown",
-'reply_to_message_id'=>$message_id,
-'reply_markup'=>json_encode([
-'inline_keyboard'=>[
-[['text'=>'- رجوع 🔜','callback_data'=>"startup"]]
-]
-])
-]);
-unlink("data/id/$id/step.txt");
-exit;
-}
-bot('sendMessage',[
-'chat_id'=>$chat_id,
-'text'=>"
-*✅ - إجابة صحيحة ⚜!
-
-♻️ - تتم معالجة البيانات يرجى الإنتظار قليلاً.*
-",
-'parse_mode'=>"MarkDown",
-'reply_to_message_id'=>$message->message_id,
-]);
-sleep(2);
-bot('sendMessage',[
-'chat_id'=>$chat_id,
-'text'=>"
-☑️ - تم إنشاء حساب جديد لك.!✔
-
-📧 - الحساب: *$emile*
-🔐 - كلمة السر: *$password*
-🆔 - أيدي الحساب: *$chat_id*
-
-⚠️ - ملاحظة: *قم بتغيير كلمة مرورك من الإعدادات حتى تستطيع تذكرها متى ماشئت.*
-
-⚠️ - ملاحظة: *لاتعطي كلمة مرورك لأي شخص حتى تحفظ حسابك من الإختراق.*
-
-✅ *- إضغط على حسابك الأن ⬇️ للدخول للبوت.*
-",
-'parse_mode'=>"MarkDown",
-'reply_to_message_id'=>$message->message_id,
-'reply_markup'=>json_encode([
-'inline_keyboard'=>[
-[['text'=>'⚜ - تسجيل الدخول','callback_data'=>"emils-$emile-$password"]]
-]
-])
-]);
-bot('sendMessage',[
-'chat_id'=>$eer,
-'text'=>"
-☑️ - تم إنشاء حساب جديد في البوت.!✔
-
-✅ - الحساب: *$emile*
-🔐 - كلمة السر: *$password*
-🆔 - أيدي الحساب: [$chat_id](tg://openmessage?user_id=$chat_id)
-⚜ - إسم العضو: [$first](tg://user?id=$chat_id)
-🌀 - المعرف: $uss
-",
-'parse_mode'=>"MarkDown",
-'reply_markup'=>json_encode([
-'inline_keyboard'=>[
-[['text'=>"☑️ - رابط العضو ↖️",'url'=>"tg://openmessage?user_id=$id"]]
-]
-])
-]);
-$EMIL[$chat_id]['emil'] = $emile;
-$EMIL[$chat_id]['pass'] = $password;
-$EMIL[$chat_id]['Date_created'] = "$D/$M/$Y $tims";
-Aemil($EMIL);
-$EMILS['emils'][$emile]['emil'] = $emile;
-$EMILS['emils'][$emile]['pass'] = $password;
-$EMILS['emils'][$emile]['Date_created'] = "$D/$M/$Y $tims";
-$EMILS['emils'][$emile]['id'] = $chat_id;
-Bemil($EMILS);
-unlink("data/id/$id/step.txt");
-exit;
-}
 #=========={الإحصائيات}==========#
+
 if($data == "statsbot2"){
 bot('EditMessageText',[
 'chat_id'=>$chat_id,
@@ -957,7 +701,7 @@ bot('EditMessageText',[
 • *تعليمات عن كيفية إستعمال البوت :* ↘️
 
 - عندما تقوم بشراء رقم يجب أن تقوم بفحصها في حالة كانت الأرقام مستخدمة قم ب إلغاء الرقم وفي حالة كانت الأرقام جديده قم بشرائها.
-- لفحص الرقم, أضغط على زر *رؤية الرقم في واتسأب* بعد شراء الرقم, سيقوم بتوجيهك إلى الواتساب, في حالة قال لك *إن رقم الهاتف هذا +967••• @you_k711 ليس في واتسأب* هذا يعني أن الرقم جديد ولم يستخدم في واتسأب من قبل, *أما في الحالات الأخرى فهذا يعني أن الرقم مستخدم في واتسأب ولا نتحمل مسؤولية تفعيلة في أي حال من الأحوال.*
+- لفحص الرقم, أضغط على زر *رؤية الرقم في واتسأب* بعد شراء الرقم, سيقوم بتوجيهك إلى الواتساب, في حالة قال لك *إن رقم الهاتف هذا +967••• @pilotoooo ليس في واتسأب* هذا يعني أن الرقم جديد ولم يستخدم في واتسأب من قبل, *أما في الحالات الأخرى فهذا يعني أن الرقم مستخدم في واتسأب ولا نتحمل مسؤولية تفعيلة في أي حال من الأحوال.*
 - قد لا تصل الأكواد إلى بعض الأرقام لتطبيق *واتسأب* , لذلك ياعزيزي يمكنك  إستخدام واتسأب أعمال قد تم نشرة في قناتنا على التيليجرام [إضغط هنا لتحميلها](t.me/$chall/2186).
 - في حالة لم يصل الكود في هذه النسخة, قم بعمل إرسال رسالة مجددا في الواتسأب وأنتظر نصف دقيقة وأضغط تحديث, في حالة لم يصل بعد قم بإلغائه وشراء رقم آخر.
 
@@ -1046,7 +790,7 @@ bot('EditMessageText',[
 'message_id'=>$message_id,
 'text'=>"
 👨‍✈️ *⁞ مرحبا بك* [$first](tg://user?id=$id) ؛
-🏛 *⁞ هذه تفاصيل حسابك في بوت. @you_k711* ⬇️
+🏛 *⁞ هذه تفاصيل حسابك في بوت. @pilotoooo* ⬇️
 
 📨︙حسابك: *$emile* 
 💰︙رصيدك: *₽ $Balance 💸*
@@ -1085,16 +829,14 @@ bot('EditMessageText',[
 'text'=>"
 ♐️ - مرحبا بك [$first](tg://user?id=$id) ؛ 🤍
 
-*- في بوت @you_k711 ؛ البوت الأفضل على التليجرام والذي يقوم بتوفير *خدمات الأرقام الوهمية* ل مواقع السوشيال ميديا مثل *التيليجرام والواتساب والتويتر وغيره* 👾
+*- في بوت @pilotoooo ؛ البوت الأفضل على التليجرام والذي يقوم بتوفير *خدمات الأرقام الوهمية* ل مواقع السوشيال ميديا مثل *التيليجرام والواتساب والتويتر وغيره* 👾
 
-*- تم تسجيل دخولك تلقائيًا، ويمكنك استخدام البوت مباشرةً. ☑️*
+*- تم إنشاء حسابك تلقائيًا وربطه بأيدي Telegram الخاص بك. يمكنك استخدام البوت مباشرةً. ☑️
 ",
 'parse_mode'=>"MarkDown",
 'disable_web_page_preview'=>true,
 'reply_markup'=>json_encode([
 'inline_keyboard'=>[
-
-
 [['text'=>'شروط الإستخدام وإخلاء للمسؤلية 🚨','callback_data'=>"to_explain"]],
 [["text"=>'إدارة البوت 👨🏻‍💻',"url"=>"tg://user?id=$sudo"]],
 [['text'=>'هام للأعضاء الجُدد ⚠️','callback_data'=>"Important"]],
@@ -1156,17 +898,15 @@ bot('SendMessage',[
 'text'=>"
 ♐️ - مرحبا بك [$first](tg://user?id=$id) ؛ 🤍
 
-*- في بوت @you_k711* ؛ البوت الأفضل على التليجرام والذي يقوم بتوفير *خدمات الأرقام الوهمية* ل مواقع السوشيال ميديا مثل *التيليجرام والواتساب والتويتر وغيره* 👾
+*- في بوت @pilotoooo* ؛ البوت الأفضل على التليجرام والذي يقوم بتوفير *خدمات الأرقام الوهمية* ل مواقع السوشيال ميديا مثل *التيليجرام والواتساب والتويتر وغيره* 👾
 
-*- تم تسجيل دخولك تلقائيًا، ويمكنك استخدام البوت مباشرةً. ☑️*
+*- تم إنشاء حسابك تلقائيًا وربطه بأيدي Telegram الخاص بك. يمكنك استخدام البوت مباشرةً. ☑️
 ",
 'parse_mode'=>"MarkDown",
 'disable_web_page_preview'=>true,
 'reply_to_message_id'=>$message_id,
 'reply_markup'=>json_encode([
 'inline_keyboard'=>[
-
-
 [['text'=>'شروط الإستخدام وإخلاء للمسؤلية 🚨','callback_data'=>"to_explain"]],
 [["text"=>'إدارة البوت 👨🏻‍💻',"url"=>"tg://user?id=$sudo"]],
 [['text'=>'هام للأعضاء الجُدد ⚠️','callback_data'=>"Important"]],
@@ -1186,17 +926,15 @@ bot('EditMessageText',[
 'text'=>"
 ♐️ - مرحبا بك [$first](tg://user?id=$id) ؛ 🤍
 
-*- في بوت @you_k711* ؛ البوت الأفضل على التليجرام والذي يقوم بتوفير *خدمات الأرقام الوهمية* ل مواقع السوشيال ميديا مثل *التيليجرام والواتساب والتويتر وغيره* 👾
+*- في بوت @pilotoooo* ؛ البوت الأفضل على التليجرام والذي يقوم بتوفير *خدمات الأرقام الوهمية* ل مواقع السوشيال ميديا مثل *التيليجرام والواتساب والتويتر وغيره* 👾
 
-*- تم تسجيل دخولك تلقائيًا، ويمكنك استخدام البوت مباشرةً. ☑️*
+*- تم إنشاء حسابك تلقائيًا وربطه بأيدي Telegram الخاص بك. يمكنك استخدام البوت مباشرةً. ☑️
 ",
 'parse_mode'=>"MarkDown",
 'disable_web_page_preview'=>true,
 'reply_to_message_id'=>$message_id,
 'reply_markup'=>json_encode([
 'inline_keyboard'=>[
-
-
 [['text'=>'شروط الإستخدام وإخلاء للمسؤلية 🚨','callback_data'=>"to_explain"]],
 [["text"=>'إدارة البوت 👨🏻‍💻',"url"=>"tg://user?id=$sudo"]],
 [['text'=>'هام للأعضاء الجُدد ⚠️','callback_data'=>"Important"]],
@@ -1730,8 +1468,6 @@ bot('EditMessageText',[
 [['text'=>'🔑︙تعديل كلمة سر الحساب','callback_data'=>"changepass"]],
 [['text'=>'🔄︙تحويل روبل إلى حساب','callback_data'=>"SendCoin"]],
 [['text'=>'☑️︙إستلام تحويل روبل','callback_data'=>"receiptpri"]],
-
-[['text'=>'⚠️︙تسجيل الخروج من الحساب','callback_data'=>"logout"]],
 [['text'=>'- رجوع.','callback_data'=>'back']]
 ]
 ])
@@ -2446,143 +2182,8 @@ PricBuys($BUYSPRIC,$idEM);
 unlink("data/id/$id/step.txt");
 }
 }
-#========={تسجيل الدخول_2}==========#
-if(false && $data == "login_2"){
-$emile = $EMIL[$chat_id]['emil'];
-$password = $EMILS['emils'][$emile]['pass'];
-bot('EditMessageText',[
-'chat_id'=>$chat_id,
-'message_id'=>$message_id,
-'text'=>"
-*♻️ - يرجى إرسال الحساب او الإيميل الذي تريد تسجيل الدخول عليه ، (يجب أن يكون هذا الإيميل مسجل بالبوت. ⚠️)
-
-☑️ - اذا لديك حساب من قبل سيضهر في الأسفل ، إضغط عليه لتسجيل الدخول ✅.*
-",
-'parse_mode'=>"MarkDown",
-'reply_markup'=>json_encode([
-'inline_keyboard'=>[
-[['text'=>"- $emile .",'callback_data'=>"emils-$emile-$password"]],
-[['text'=>'- رجوع.','callback_data'=>"MyAccount"]]
-]
-])
-]);
-file_put_contents("data/id/$id/step.txt","login_2");
-}
-if($text != '/start' && $text != null && $step == 'login_2'){
-$pass=$EMILS['emils'][$text]['pass'];
-$IDem=$EMILS['emils'][$text]['id'];
-if($EMILS['emils'][$text]['emil'] == null){
-bot('sendMessage',[
-'chat_id'=>$chat_id,
-'text'=>"
-⚠️ *- لم يتم إنشاء حساب ب هذا الإيميل في البوت!*
-",
-'parse_mode'=>"MarkDown",
-'reply_to_message_id'=>$message_id,
-'reply_markup'=>json_encode([
-'inline_keyboard'=>[
-[['text'=>'- رجوع.','callback_data'=>"MyAccount"]]
-]
-])
-]);
-unlink("data/id/$id/step.txt");
-}else{
-bot('sendMessage',[
-'chat_id'=>$chat_id,
-'text'=>"
-☑️ *- يرجى الإنتظار يتم فحص الحساب ⏳...*
-",
-'parse_mode'=>"MarkDown",
-'reply_to_message_id'=>$message_id,
-]);
-sleep(1);
-bot('sendMessage',[
-'chat_id'=>$chat_id,
-'text'=>"
-🔐 *- ادخل كلمة مرور حسابك الأن* ☑️
-",
-'parse_mode'=>"MarkDown",
-'reply_to_message_id'=>$message_id,
-'reply_markup'=>json_encode([
-'inline_keyboard'=>[
-[['text'=>"⚠️ - طلب المساعدة",'callback_data'=>"super"]],
-[['text'=>'- رجوع.','callback_data'=>"MyAccount"]]
-]
-])
-]);
-file_put_contents("data/id/$id/step.txt","pasword_2|$text");
-}
-}
-if($text != '/start' && $text != null && $exstep[0] == 'pasword_2'){
-$emile = $exstep[1];
-$passe = $EMILS['emils'][$emile]['pass'];
-if($text !== $passe){
-bot('sendMessage',[
-'chat_id'=>$chat_id,
-'text'=>"
-*♻️ - كلمة المرور ليست صحيحة ⛔️*
-",
-'parse_mode'=>"MarkDown",
-'reply_to_message_id'=>$message_id,
-'reply_markup'=>json_encode([
-'inline_keyboard'=>[
-[['text'=>'- رجوع.','callback_data'=>"MyAccount"]]
-]
-])
-]);
-unlink("data/id/$id/step.txt");
-}else{
-$get=bot('sendMessage',[
-'chat_id'=>$chat_id,
-'text'=>"
-♻️ *- تم التحقق بنجاح، انتظر قليلا ....*
-",
-'parse_mode'=>"MarkDown",
-'reply_to_message_id'=>$message->message_id,
-]);
-sleep(1);
-$get=$get->result->message_id;
-bot('deletemessage',[
-'chat_id'=>$chat_id, 
-'message_id'=>$get,
-]);
-bot('sendMessage',[
-'chat_id'=>$chat_id,
-'text'=>"
-⤵️ *- يمكنك الآن الضغط على الإيميل بالأسفل للتسجيل* ☑️
-",
-'parse_mode'=>"MarkDown",
-'reply_to_message_id'=>$message_id,
-'reply_markup'=>json_encode([
-'inline_keyboard'=>[
-[['text'=>"$emile",'callback_data'=>"emils-$emile-$passe"]]
-]
-])
-]);
-unlink("data/id/$id/step.txt");
-}
-}
-#=========={تسجيل الخروج}==========#
-if($data == "logout"){
-bot('EditMessageText',[
-'chat_id'=>$chat_id,
-'message_id'=>$message_id,
-'text'=>"
-☑️ *- تم تسجيل الخروج من الحساب [$EM] بنجاح*
-",
-'parse_mode'=>"MarkDown",
-'reply_markup'=>json_encode([
-'inline_keyboard'=>[
-[['text'=>"- رجوع.",'callback_data'=>"startup"]]
-]
-])
-]);
-$EMILNow['emil'][$chat_id] = null;
-$EMILNow['password'][$chat_id] = null;
-Now($EMILNow);
-unlink("data/id/$id/step.txt");
-}
 #=========={الإحصائيات}==========#
+
 if($data == "statsbot"){
 bot('EditMessageText',[
 'chat_id'=>$chat_id,
@@ -2615,17 +2216,15 @@ bot('sendMessage',[
 'text'=>"
 ♐️ - مرحبا بك [$first](tg://user?id=$id) ؛ 🤍
 
-*- في بوت @you_k711* ؛ البوت الأفضل على التليجرام والذي يقوم بتوفير *خدمات الأرقام الوهمية* ل مواقع السوشيال ميديا مثل *التيليجرام والواتساب والتويتر وغيره* 👾
+*- في بوت @pilotoooo* ؛ البوت الأفضل على التليجرام والذي يقوم بتوفير *خدمات الأرقام الوهمية* ل مواقع السوشيال ميديا مثل *التيليجرام والواتساب والتويتر وغيره* 👾
 
-*- تم تسجيل دخولك تلقائيًا، ويمكنك استخدام البوت مباشرةً. ☑️*
+*- تم إنشاء حسابك تلقائيًا وربطه بأيدي Telegram الخاص بك. يمكنك استخدام البوت مباشرةً. ☑️
 ",
 'parse_mode'=>"MarkDown",
 'disable_web_page_preview'=>true,
 'reply_to_message_id'=>$message_id,
 'reply_markup'=>json_encode([
 'inline_keyboard'=>[
-
-
 [['text'=>'شروط الإستخدام وإخلاء للمسؤلية 🚨','callback_data'=>"to_explain"]],
 [["text"=>'إدارة البوت 👨🏻‍💻',"url"=>"tg://user?id=$sudo"]],
 [['text'=>'هام للأعضاء الجُدد ⚠️','callback_data'=>"Important"]],
@@ -4009,7 +3608,7 @@ bot('EditMessageText',[
 'chat_id'=>$chat_id,
 'message_id'=>$message_id,
 'text'=>"
-🧑‍✈️ *- أهلا بك عزيزي العميل* في قسم وكلاء البوت الرسميين في بوت *@you_k711* ☑️
+🧑‍✈️ *- أهلا بك عزيزي العميل* في قسم وكلاء البوت الرسميين في بوت *@pilotoooo* ☑️
 ",
 'parse_mode'=>"MarkDown",
 'reply_markup'=>($keyboad),
